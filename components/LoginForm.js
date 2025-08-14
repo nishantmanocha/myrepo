@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../redux/services/operations/authServices";
+import {
+  login,
+  loginOrCreateWithSocial,
+  setToken,
+} from "../redux/services/operations/authServices";
 import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
-import OAuthButtons from "./OAuthButtons";
 import SecureTextInput from "./SecureTextInput";
-
 import auth from "@react-native-firebase/auth";
 import {
   GoogleSignin,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
+
 import { router } from "expo-router";
 
 const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
@@ -51,9 +54,9 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
       await GoogleSignin.signOut();
 
       const signInResult = await GoogleSignin.signIn();
+      console.log("signInResult:", signInResult);
 
-      let idToken = signInResult?.idToken;
-      console.log("Google Sign-In Result:", idToken);
+      let idToken = signInResult?.data?.idToken;
       if (!idToken) {
         const tokens = await GoogleSignin.getTokens();
         idToken = tokens?.idToken;
@@ -66,10 +69,44 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const userCredential =
         await auth().signInWithCredential(googleCredential);
-      console.log("User signed in:", userCredential.user);
 
-      router.replace("/(app)/(tabs)");
-      console.log("User signed in with Google:", userCredential.user);
+      // Build payload for backend social login/create
+      const googleUser = userCredential?.user;
+      const siUser = signInResult?.data?.user || {};
+
+      const displayName = googleUser?.displayName || siUser?.name || "";
+      const [firstNameFromDisplay, ...restName] = displayName
+        .split(" ")
+        .filter(Boolean);
+
+      const email = googleUser?.email || siUser?.email;
+      const firstName = siUser?.givenName || firstNameFromDisplay || "User";
+      const lastName = siUser?.familyName || restName.join(" ") || "Google";
+      const avatar = googleUser?.photoURL || siUser?.photo;
+      console.log(
+        "google user",
+        email,
+        firstName,
+        lastName,
+        avatar,
+        "google user"
+      );
+      if (!email) {
+        console.error("Google Sign-In returned no email");
+        Toast.show({ type: "error", text1: "Google did not return an email" });
+        return;
+      }
+
+      const result = await dispatch(
+        loginOrCreateWithSocial({ email, firstName, lastName, avatar })
+      );
+      console.log(result);
+
+      if (result?.success) {
+        router.replace("/(app)/(tabs)");
+      } else {
+        Toast.show({ type: "error", text1: result?.error || "Sign-in failed" });
+      }
     } catch (error) {
       if (error?.code === statusCodes.IN_PROGRESS) {
         console.warn("Google Sign-In already in progress");

@@ -8,7 +8,11 @@
 const isDev = process.env.NODE_ENV !== "production";
 
 // Use localhost for development and actual domain for production
-const BASE_URL = process.env.SERVER_URL || (isDev ? "http://localhost:5000/api" : "https://your-production-domain.com/api");
+const BASE_URL =
+  process.env.SERVER_URL ||
+  (isDev
+    ? "http://localhost:5000/api"
+    : "https://your-production-domain.com/api");
 console.log("API Base URL:", BASE_URL);
 
 // AUTHENTICATION API
@@ -20,6 +24,7 @@ export const authApi = {
   POST_FORGOT_PASSWORD_API: BASE_URL + "/auth/forgot-password",
   POST_VERIFY_OTP_API: BASE_URL + "/auth/verify-otp",
   POST_RESET_PASSWORD_API: BASE_URL + "/auth/reset-password",
+  POST_SOCIAL_LOGIN_API: BASE_URL + "/auth/social-login", // add this
   //   GET_GET_ME_API: BASE_URL + '/auth/getme',
   //   PUT_CHANGE_PASSWORD_API: BASE_URL + '/auth/changepassword',
   //   POST_CREATE_ADMIN_API: BASE_URL + '/auth/createadmin',

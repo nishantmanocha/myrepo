@@ -1,28 +1,73 @@
-const OTP = require('../models/OTP');
-const User = require('../models/User');
-const Profile = require('../models/Profile');
-const { generateOTP } = require('../utils/otpGenerator');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const emailsender = require('../utils/emailsender');
-const accountCreationTemplate = require('../mail/accountCreationTemplate');
+const OTP = require("../models/OTP");
+const User = require("../models/User");
+const Profile = require("../models/Profile");
+const { generateOTP } = require("../utils/otpGenerator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const emailsender = require("../utils/emailsender");
+const accountCreationTemplate = require("../mail/accountCreationTemplate");
 
 // @desc    Send OTP for registration
 // @route   POST /api/auth/send-otp
 // @access  Public
+
+exports.socialLogin = async (req, res) => {
+  try {
+    const { email, firstName, lastName, avatar } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const profile = await Profile.create({});
+      const randomPassword = crypto.randomBytes(24).toString("hex");
+
+      const safeFirstName = (firstName && firstName.trim()) || "User";
+      const safeLastName = (lastName && lastName.trim()) || provider;
+
+      user = await User.create({
+        firstName: safeFirstName,
+        lastName: safeLastName,
+        email,
+        password: randomPassword, // will be hashed by pre('save')
+        profile: profile._id,
+        avatar:
+          avatar ||
+          `https://api.dicebear.com/5.x/initials/svg?seed=${safeFirstName}%20${safeLastName}`,
+        isEmailVerified: true,
+      });
+    } else {
+      user.lastLogin = new Date();
+      await user.save();
+    }
+
+    return sendTokenResponse(res, user, 200);
+  } catch (error) {
+    console.error("❌ Social login error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Social login failed" });
+  }
+};
+
 exports.sendOTP = async (req, res) => {
   try {
-    console.log('📝 Sending OTP for registration...');
+    console.log("📝 Sending OTP for registration...");
     const { email } = req.body;
-    
+
     console.log(`📝 Email: ${email}`);
-    
+
     if (await User.findOne({ email })) {
-      console.log('❌ User already exists:', email);
+      console.log("❌ User already exists:", email);
       return res.status(401).json({
         success: false,
-        message: "User is already registered"
+        message: "User is already registered",
       });
     }
 
@@ -37,13 +82,13 @@ exports.sendOTP = async (req, res) => {
     console.log(`📝 Generated OTP: ${otp}`);
 
     const otpObj = await OTP.create({ email, otp });
-    console.log('✅ OTP created and saved');
+    console.log("✅ OTP created and saved");
 
     // Send OTP email
-    console.log('📝 Sending OTP email...');
+    console.log("📝 Sending OTP email...");
     const emailSent = await emailsender(
-      email, 
-      'FinEduGuard - Email Verification OTP',
+      email,
+      "FinEduGuard - Email Verification OTP",
       `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
@@ -81,25 +126,24 @@ exports.sendOTP = async (req, res) => {
     );
 
     if (!emailSent) {
-      console.log('❌ Failed to send OTP email');
+      console.log("❌ Failed to send OTP email");
       return res.status(500).json({
         success: false,
-        message: 'Failed to send OTP email'
+        message: "Failed to send OTP email",
       });
     }
 
-    console.log('✅ OTP sent successfully');
+    console.log("✅ OTP sent successfully");
     res.status(200).json({
       success: true,
       data: otpObj.otp,
-      message: 'OTP sent successfully',
+      message: "OTP sent successfully",
     });
-
   } catch (error) {
-    console.error('❌ Send OTP error:', error);
+    console.error("❌ Send OTP error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to send otp. Please try again',
+      message: "Failed to send otp. Please try again",
       error: error.message,
     });
   }
@@ -111,50 +155,68 @@ exports.sendOTP = async (req, res) => {
 
 exports.signUp = async (req, res) => {
   try {
-    console.log('📝 [SIGNUP] Step 1: Received request body:', req.body);
+    console.log("📝 [SIGNUP] Step 1: Received request body:", req.body);
     let { firstName, lastName, email, password, otp } = req.body;
 
     if (!(firstName && lastName && email && password && otp)) {
-      console.log('❌ [SIGNUP] Step 2: Missing required fields:', { firstName, lastName, email, password, otp });
+      console.log("❌ [SIGNUP] Step 2: Missing required fields:", {
+        firstName,
+        lastName,
+        email,
+        password,
+        otp,
+      });
       return res.status(403).json({
         success: false,
-        message: "Some fields are missing"
+        message: "Some fields are missing",
       });
     }
 
-    console.log(`📝 [SIGNUP] Step 3: Attempting signup for user: ${firstName} ${lastName} (${email})`);
+    console.log(
+      `📝 [SIGNUP] Step 3: Attempting signup for user: ${firstName} ${lastName} (${email})`
+    );
 
     // Check OTP
-    const recentOtp = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
-    console.log('[SIGNUP] Step 4: Most recent OTP found:', recentOtp.length > 0 ? recentOtp[0].otp : null);
+    const recentOtp = await OTP.find({ email })
+      .sort({ createdAt: -1 })
+      .limit(1);
+    console.log(
+      "[SIGNUP] Step 4: Most recent OTP found:",
+      recentOtp.length > 0 ? recentOtp[0].otp : null
+    );
 
     if (recentOtp.length === 0 || otp !== recentOtp[0].otp) {
-      console.log('❌ [SIGNUP] Step 5: Invalid OTP. Provided:', otp, 'Expected:', recentOtp.length > 0 ? recentOtp[0].otp : null);
+      console.log(
+        "❌ [SIGNUP] Step 5: Invalid OTP. Provided:",
+        otp,
+        "Expected:",
+        recentOtp.length > 0 ? recentOtp[0].otp : null
+      );
       return res.status(400).json({
         success: false,
-        message: 'OTP is not valid. Please try again'
+        message: "OTP is not valid. Please try again",
       });
     }
 
     // Check for existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log('❌ [SIGNUP] Step 6: User already exists:', email);
+      console.log("❌ [SIGNUP] Step 6: User already exists:", email);
       return res.status(400).json({
         success: false,
-        message: 'User already exist. Please sign in to continue'
+        message: "User already exist. Please sign in to continue",
       });
     }
 
     // Create empty profile
-    console.log('[SIGNUP] Step 7: Creating user profile...');
+    console.log("[SIGNUP] Step 7: Creating user profile...");
     const profile = await Profile.create({});
 
     // 🔐 Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    console.log('[SIGNUP] Step 8: Creating user...');
+    console.log("[SIGNUP] Step 8: Creating user...");
     const user = await User.create({
       firstName,
       lastName,
@@ -163,32 +225,33 @@ exports.signUp = async (req, res) => {
       profile: profile._id,
       avatar: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}%20${lastName}`,
     });
-    console.log('[SIGNUP] Step 9: User created successfully:', user._id);
+    console.log("[SIGNUP] Step 9: User created successfully:", user._id);
 
     // Send welcome email
-    console.log('[SIGNUP] Step 10: Sending welcome email...');
+    console.log("[SIGNUP] Step 10: Sending welcome email...");
     const emailSent = await emailsender(
       email,
       `Your account created successfully for ${firstName} ${lastName}`,
-      accountCreationTemplate(firstName + ' ' + lastName)
+      accountCreationTemplate(firstName + " " + lastName)
     );
 
     if (!emailSent) {
-      console.log('[SIGNUP] Step 11: Failed to send welcome email, but user created successfully');
+      console.log(
+        "[SIGNUP] Step 11: Failed to send welcome email, but user created successfully"
+      );
     }
 
     // Clear the used OTP
     await OTP.deleteOne({ _id: recentOtp[0]._id });
-    console.log('[SIGNUP] Step 12: OTP deleted after use');
+    console.log("[SIGNUP] Step 12: OTP deleted after use");
 
-    console.log('[SIGNUP] Step 13: Signup completed successfully');
+    console.log("[SIGNUP] Step 13: Signup completed successfully");
     sendTokenResponse(res, user, 201);
-
   } catch (error) {
-    console.error('❌ Signup error:', error);
+    console.error("❌ Signup error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to sign up. Please try again',
+      message: "Failed to sign up. Please try again",
       error: error.message,
     });
   }
@@ -199,35 +262,35 @@ exports.signUp = async (req, res) => {
 // @access  Public
 exports.login = async (req, res, next) => {
   try {
-    console.log('📝 User login started...');
+    console.log("📝 User login started...");
     const email = req.body.email;
     const password = req.body.password;
 
     if (!email || !password) {
-      console.log('❌ Missing email or password');
+      console.log("❌ Missing email or password");
       return res.status(403).json({
         success: false,
-        message: "Some fields are missing"
+        message: "Some fields are missing",
       });
     }
 
     console.log(`📝 Login attempt for: ${email}`);
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      console.log('❌ User not found:', email);
+      console.log("❌ User not found:", email);
       return res.status(400).json({
         success: false,
-        message: "Invalid credentials"
+        message: "Invalid credentials",
       });
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      console.log('❌ Invalid password for:', email);
+      console.log("❌ Invalid password for:", email);
       return res.status(400).json({
         success: false,
-        message: "Invalid credentials"
+        message: "Invalid credentials",
       });
     }
 
@@ -235,14 +298,13 @@ exports.login = async (req, res, next) => {
     user.lastLogin = new Date();
     await user.save();
 
-    console.log('✅ Login successful for:', email);
+    console.log("✅ Login successful for:", email);
     sendTokenResponse(res, user, 200);
-
   } catch (err) {
-    console.error('❌ Login error:', err);
+    console.error("❌ Login error:", err);
     return res.status(500).json({
       success: false,
-      message: "Login failed. Please try again"
+      message: "Login failed. Please try again",
     });
   }
 };
@@ -253,7 +315,7 @@ exports.login = async (req, res, next) => {
 exports.logOut = async (req, res, next) => {
   try {
     res
-      .cookie('token', 'none', {
+      .cookie("token", "none", {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
       })
@@ -265,7 +327,7 @@ exports.logOut = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: "Failed to log out. Please try again"
+      message: "Failed to log out. Please try again",
     });
   }
 };
@@ -303,7 +365,7 @@ exports.forgotPassword = async (req, res) => {
     // Send email
     const emailSent = await emailsender(
       email,
-            `Password Reset OTP for ${user.firstName} ${user.lastName}`,
+      `Password Reset OTP for ${user.firstName} ${user.lastName}`,
       `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
@@ -339,7 +401,6 @@ exports.forgotPassword = async (req, res) => {
         </div>
       </div>
       `
-
     );
 
     if (!emailSent) {
@@ -353,7 +414,6 @@ exports.forgotPassword = async (req, res) => {
       success: true,
       message: "Password reset OTP sent successfully.",
     });
-
   } catch (error) {
     console.error("❌ Forgot password error:", error);
     return res.status(500).json({
@@ -371,7 +431,9 @@ exports.verifyOTP = async (req, res) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
-      return res.status(400).json({ success: false, message: "Email and OTP are required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and OTP are required." });
     }
 
     const record = await OTP.findOne({ email }).sort({ createdAt: -1 });
@@ -381,11 +443,14 @@ exports.verifyOTP = async (req, res) => {
     }
 
     if (Date.now() > record.expiresAt) {
-      return res.status(400).json({ success: false, message: "OTP has expired." });
+      return res
+        .status(400)
+        .json({ success: false, message: "OTP has expired." });
     }
 
-    return res.status(200).json({ success: true, message: "OTP verified successfully." });
-
+    return res
+      .status(200)
+      .json({ success: true, message: "OTP verified successfully." });
   } catch (error) {
     console.error("❌ OTP Verification Error:", error);
     return res.status(500).json({ success: false, message: "Server error." });
@@ -413,7 +478,9 @@ exports.resetPassword = async (req, res) => {
     }
 
     if (Date.now() > record.expiresAt) {
-      return res.status(400).json({ success: false, message: "OTP has expired." });
+      return res
+        .status(400)
+        .json({ success: false, message: "OTP has expired." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -425,7 +492,9 @@ exports.resetPassword = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
     }
 
     await OTP.deleteMany({ email });
@@ -433,7 +502,7 @@ exports.resetPassword = async (req, res) => {
     await emailsender(
       user.email,
       `Password has been reset successfully for ${user.firstName} ${user.lastName}`,
-        `
+      `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">FinEduGuard</h1>
@@ -457,7 +526,7 @@ exports.resetPassword = async (req, res) => {
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.FRONTEND_SITE || 'http://localhost:3000'}" 
+              <a href="${process.env.FRONTEND_SITE || "http://localhost:3000"}" 
                  style="background: #151717; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
                 Visit FinEduGuard
               </a>
@@ -505,7 +574,6 @@ exports.resetPassword = async (req, res) => {
           role: user.role,
         },
       });
-
   } catch (error) {
     console.error("❌ Reset Password Error:", error);
     return res.status(500).json({ success: false, message: "Server error." });
@@ -519,14 +587,14 @@ const getMe = async (req, res) => {
     res.json({
       success: true,
       data: {
-        user: req.user
-      }
+        user: req.user,
+      },
     });
   } catch (error) {
-    console.error('Get me error:', error);
+    console.error("Get me error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: "Server error",
     });
   }
 };
@@ -544,11 +612,13 @@ const sendTokenResponse = async (res, user, statusCode) => {
   );
 
   const options = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
     httpOnly: true,
   };
 
-  res.cookie('token', token, options).status(statusCode).json({
+  res.cookie("token", token, options).status(statusCode).json({
     success: true,
     user,
     token,
@@ -563,5 +633,6 @@ module.exports = {
   forgotPassword: exports.forgotPassword,
   resetPassword: exports.resetPassword,
   verifyOTP: exports.verifyOTP,
-  getMe: exports.getMe
-}; 
+  getMe: exports.getMe,
+  socialLogin: exports.socialLogin,
+};

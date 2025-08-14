@@ -25,6 +25,57 @@ const getErrorMessage = (error, fallback = "Something went wrong") => {
 /**
  * 🔑 LOGIN USER
  */
+
+export const loginOrCreateWithSocial =
+  ({ email, firstName, lastName, avatar }) =>
+  async (dispatch) => {
+    dispatch(setLoading(true));
+    Toast.show({ type: "info", text1: "Signing in..." });
+
+    try {
+      const response = await apiConnector(
+        "POST",
+        authApi.POST_SOCIAL_LOGIN_API,
+        {
+          email,
+          firstName,
+          lastName,
+          avatar,
+          provider: "google",
+        }
+      );
+
+      dispatch(setToken(response.data.token));
+      dispatch(setUser(response.data.user));
+      await saveToken(response.data.token);
+
+      await AsyncStorageService.setItem(
+        STORAGE_KEYS.USER_TOKEN,
+        response.data.token
+      );
+      await AsyncStorageService.setItem(
+        STORAGE_KEYS.USER_PROFILE,
+        response.data.user
+      );
+      await AsyncStorageService.setItem(
+        STORAGE_KEYS.LAST_LOGIN,
+        new Date().toISOString()
+      );
+
+      dispatch(setLoading(false));
+      return {
+        success: true,
+        token: response.data.token,
+        user: response.data.user,
+      };
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, "Google sign-in failed");
+      Toast.show({ type: "error", text1: errorMessage });
+      dispatch(setLoading(false));
+      return { error: errorMessage };
+    }
+  };
+
 export const login = (email, password) => async (dispatch) => {
   dispatch(setLoading(true));
   console.log("🚀 [login] Called with email:", email);
