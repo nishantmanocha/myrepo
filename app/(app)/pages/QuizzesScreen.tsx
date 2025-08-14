@@ -26,6 +26,7 @@ import QuizCard from "../../../components/QuizCard";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import API from "../../../api/api";
+import Loader from "../../../components/Loader";
 
 const QuizzesScreen = () => {
   const [completedQuizzes, setCompletedQuizzes] = useState([]);
@@ -34,11 +35,13 @@ const QuizzesScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Fetch quizzes from the server or local data
     const fetchQuizzes = async () => {
       try {
+        setLoading(true);
         const response = await API.get(
           `${process.env.SERVER_URL}/quizzes?category=` +
             selectedCategory +
@@ -50,6 +53,7 @@ const QuizzesScreen = () => {
         }
         const data = await response.data;
         setQuizzes(data.quizzes);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching quizzes:", error);
       }
@@ -111,6 +115,14 @@ const QuizzesScreen = () => {
   };
 
   const badges = getBadges();
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Loader />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

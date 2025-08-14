@@ -90,7 +90,7 @@ export default function LoanMessageScreen() {
         <View style={styles.contactInfo}>
           <View style={styles.contactItem}>
             <Phone size={16} color="#2563eb" />
-            <Text style={styles.contactText}>+91 98765 43210</Text>
+            <Text style={styles.contactText}>+91 98765 xxxxx</Text>
           </View>
           <View style={styles.contactItem}>
             <Mail size={16} color="#2563eb" />

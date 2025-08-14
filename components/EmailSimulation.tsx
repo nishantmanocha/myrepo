@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   StatusBar,
 } from "react-native";
@@ -16,6 +15,7 @@ import {
   Eye,
   ArrowRight,
 } from "lucide-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface EmailSimulationProps {
   onNext: () => void;
@@ -52,9 +52,7 @@ const EmailSimulation = ({ onNext }: EmailSimulationProps) => {
                     <Text style={styles.suspiciousBadgeText}>SUSPICIOUS</Text>
                   </View>
                 </View>
-                <Text style={styles.senderEmail}>
-                  noreply@punjabandsindbank.in
-                </Text>
+                <Text style={styles.senderEmail}>noreply@abcbank.in</Text>
                 <View style={styles.emailMeta}>
                   <View style={styles.metaItem}>
                     <Calendar size={12} color="#666" strokeWidth={2} />
@@ -74,9 +72,9 @@ const EmailSimulation = ({ onNext }: EmailSimulationProps) => {
                 </Text>
                 <Text style={styles.emailText}>Dear Valued Customer,</Text>
                 <Text style={styles.emailText}>
-                  We have detected unauthorized login attempts on your Punjab &
-                  Sind Bank account. To prevent further misuse, please verify
-                  your identity within 12 hours by clicking the button below:
+                  We have detected unauthorized login attempts on your Bank
+                  account. To prevent further misuse, please verify your
+                  identity within 12 hours by clicking the button below:
                 </Text>
                 <Text style={styles.warningText}>
                   Failure to verify may result in account suspension.
@@ -92,11 +90,9 @@ const EmailSimulation = ({ onNext }: EmailSimulationProps) => {
                 <View style={styles.signature}>
                   <Text style={styles.signatureText}>Sincerely,</Text>
                   <Text style={styles.signatureText}>
-                    Punjab & Sind Bank Security Team
+                    Abc Bank Security Team
                   </Text>
-                  <Text style={styles.signatureText}>
-                    www.punjabandsindbank.co.in
-                  </Text>
+                  <Text style={styles.signatureText}>www.abcbank.co.in</Text>
                 </View>
               </View>
             </View>
@@ -130,7 +126,7 @@ const EmailSimulation = ({ onNext }: EmailSimulationProps) => {
               <View style={styles.analysisSection}>
                 <Text style={styles.sectionTitle}>🚩 Red Flags Found:</Text>
                 <Text style={styles.flagItem}>
-                  • Fake domain: punjabandsindbank.in (suspicious)
+                  • Fake domain: abcbank.in (suspicious)
                 </Text>
                 <Text style={styles.flagItem}>
                   • Urgency tactics: "URGENT", "immediate verification"
@@ -146,10 +142,10 @@ const EmailSimulation = ({ onNext }: EmailSimulationProps) => {
               <View style={styles.analysisSection}>
                 <Text style={styles.sectionTitle}>✅ How to Verify:</Text>
                 <Text style={styles.verifyItem}>
-                  • Check official PSB domain (psbindia.com)
+                  • Check official Bank domain
                 </Text>
                 <Text style={styles.verifyItem}>
-                  • Call PSB customer service: 1800-11-2345
+                  • Call ABC customer service: 1800-11-2345
                 </Text>
                 <Text style={styles.verifyItem}>
                   • Login through official app/website
@@ -330,11 +326,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    gap: 10,
   },
   analysisTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 5,
   },
   analysisTitleText: {
     fontSize: 18,

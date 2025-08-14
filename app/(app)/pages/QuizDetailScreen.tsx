@@ -24,6 +24,8 @@ import { saveQuizResult } from "../../../data/quizData";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import API from "../../../api/api";
+import { set } from "mongoose";
+import Loader from "../../../components/Loader";
 
 const QuizDetailScreen = () => {
   const { quizId } = useLocalSearchParams();
@@ -34,24 +36,25 @@ const QuizDetailScreen = () => {
   const [showResults, setShowResults] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchQuiz = async () => {
-    try {
-      const res = await API.get(`/quizzes/${quizId}`);
-      const data = res.data;
-      console.log("Fetched quiz data:", data);
-      setQuiz(data?.quiz);
-    } catch (error) {
-      console.error("Error fetching quiz:", error);
-      Alert.alert("Error", "Failed to load quiz. Please try again later.");
-    }
-  };
+    const fetchQuiz = async () => {
+      try {
+        setLoading(true);
+        const res = await API.get(`/quizzes/${quizId}`);
+        const data = res.data;
+        console.log("Fetched quiz data:", data);
+        setQuiz(data?.quiz);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching quiz:", error);
+        Alert.alert("Error", "Failed to load quiz. Please try again later.");
+      }
+    };
 
-  fetchQuiz();
-}, [quizId]);
-
-
+    fetchQuiz();
+  }, [quizId]);
 
   console.log("Quiz ID:", quiz);
   // const quiz = quizzes.find((q) => q.id === quizId);
@@ -76,6 +79,7 @@ const QuizDetailScreen = () => {
       setShowExplanation(false);
     } else {
       // Quiz completed
+      setLoading(true);
       API.post(`/quizzes/${quiz._id}/submit`, { answers: newAnswers });
       const score = newAnswers.reduce((total, answer, index) => {
         return total + (answer === quiz.questions[index].correctAnswer ? 1 : 0);
@@ -83,6 +87,7 @@ const QuizDetailScreen = () => {
 
       saveQuizResult(quiz.id, score);
       setShowResults(true);
+      setLoading(false);
 
       Alert.alert(
         "Quiz Completed!",
@@ -119,6 +124,15 @@ const QuizDetailScreen = () => {
     return "💪 Keep going! Every expert was once a beginner. Try again to build your skills.";
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <Loader />
+      </SafeAreaView>
+    );
+  }
   if (showResults) {
     const score = calculateScore();
     const percentage = Math.round((score / quiz.questions.length) * 100);

@@ -21,30 +21,17 @@ import {
   Shield,
   TrendingUp,
   Target,
-  ChevronLeft,
   ChevronRight,
   Calculator,
-  MapPin,
-  FileText,
-  AlertTriangle,
-  Zap,
-  Users,
   Lock,
   Search,
   BarChart3,
   CreditCard,
   Smartphone,
-  Globe,
-  ShieldCheck,
-  Activity,
   Award,
-  DollarSign,
-  PieChart,
-  Clock,
-  AlertCircle,
 } from "lucide-react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
-import { PSBColors, PSBShadows, PSBSpacing } from "../../../utils/PSBColors";
+import { PSBColors, PSBSpacing } from "../../../utils/PSBColors";
 import ThemeToggle from "../../../components/ThemeToggle";
 import ChatbotButton from "../../../components/ChatbotButton";
 import ChatbotPopup from "../../../components/ChatbotPopup";
@@ -352,24 +339,24 @@ const HomeScreen = () => {
   const splashText2Anim = useRef(new Animated.Value(0)).current;
   const splashPtuLogoAnim = useRef(new Animated.Value(0)).current;
   const splashProjectLogoAnim = useRef(new Animated.Value(0)).current;
-  
+
   // Image specific animations - slow zoom in/out
   const psbImageScaleAnim = useRef(new Animated.Value(0.3)).current;
   const ptuImageScaleAnim = useRef(new Animated.Value(0.3)).current;
   const projectImageScaleAnim = useRef(new Animated.Value(0.3)).current;
-  
+
   // Background pattern animations
   const patternAnim1 = useRef(new Animated.Value(0)).current;
   const patternAnim2 = useRef(new Animated.Value(0)).current;
   const patternAnim3 = useRef(new Animated.Value(0)).current;
   const patternAnim4 = useRef(new Animated.Value(0)).current;
   const patternAnim5 = useRef(new Animated.Value(0)).current;
-  
+
   // Transition animations
   const splashTransitionAnim = useRef(new Animated.Value(0)).current;
   const mainPageAnim = useRef(new Animated.Value(height)).current;
   const blurAnim = useRef(new Animated.Value(0)).current;
-  
+
   // Progress animation
   const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -589,11 +576,11 @@ const HomeScreen = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!isReady ) {
+  if (!isReady) {
     return (
       <>
         {/* Splash Screen with Enhanced Design */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.splashContainer,
             {
@@ -628,14 +615,14 @@ const HomeScreen = () => {
                     {
                       rotate: patternAnim1.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['0deg', '360deg'],
+                        outputRange: ["0deg", "360deg"],
                       }),
                     },
                   ],
                 },
               ]}
             />
-            
+
             {/* Pattern 2 - Geometric Shapes */}
             <Animated.View
               style={[
@@ -691,7 +678,7 @@ const HomeScreen = () => {
                     {
                       rotate: patternAnim4.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['0deg', '180deg'],
+                        outputRange: ["0deg", "180deg"],
                       }),
                     },
                     {
@@ -724,7 +711,7 @@ const HomeScreen = () => {
                     {
                       rotate: patternAnim5.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['0deg', '-360deg'],
+                        outputRange: ["0deg", "-360deg"],
                       }),
                     },
                   ],
@@ -741,7 +728,10 @@ const HomeScreen = () => {
                 opacity: blurAnim,
                 backgroundColor: blurAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.8)'],
+                  outputRange: [
+                    "rgba(255, 255, 255, 0)",
+                    "rgba(255, 255, 255, 0.8)",
+                  ],
                 }),
               },
             ]}
@@ -789,7 +779,7 @@ const HomeScreen = () => {
                     {
                       rotateY: splashPsbLogoAnim.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['180deg', '0deg'],
+                        outputRange: ["180deg", "0deg"],
                       }),
                     },
                   ],
@@ -854,7 +844,7 @@ const HomeScreen = () => {
                     {
                       rotateY: splashPtuLogoAnim.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['180deg', '0deg'],
+                        outputRange: ["180deg", "0deg"],
                       }),
                     },
                   ],
@@ -929,7 +919,7 @@ const HomeScreen = () => {
                   {
                     width: progressAnim.interpolate({
                       inputRange: [0, 1],
-                      outputRange: ['0%', '100%'],
+                      outputRange: ["0%", "100%"],
                     }),
                   },
                 ]}
@@ -950,7 +940,10 @@ const HomeScreen = () => {
             ]}
           >
             <LinearGradient
-              colors={[PSBColors.background.primary, PSBColors.background.secondary]}
+              colors={[
+                PSBColors.background.primary,
+                PSBColors.background.secondary,
+              ]}
               style={styles.container}
             >
               <StatusBar
@@ -963,7 +956,7 @@ const HomeScreen = () => {
                   contentContainerStyle={styles.scrollContent}
                 >
                   {/* Header */}
-                  <AnimatedView
+                  <Animated.View
                     style={[
                       styles.header,
                       {
@@ -974,7 +967,16 @@ const HomeScreen = () => {
                   >
                     <View style={styles.greetingWrapper}>
                       <View style={styles.greetingRow}>
-                        <Text style={styles.greeting}>Welcome to FinEduGuard</Text>
+                        <Image
+                          source={{
+                            uri: "https://cdn.jsdelivr.net/gh/Nishant-Manocha/FineduGuard_StaticFiles@main/PSB_transparent.png",
+                          }}
+                          style={[styles.splashBottomLogo]}
+                          // resizeMode="contain"
+                        />
+                        <Text style={styles.greeting}>
+                          Welcome to FinEduGuard
+                        </Text>
                         <Animated.Text
                           style={[
                             styles.waveEmoji,
@@ -998,7 +1000,7 @@ const HomeScreen = () => {
                       </Text>
                     </View>
                     <ThemeToggle />
-                  </AnimatedView>
+                  </Animated.View>
 
                   {/* Stats */}
                   <AnimatedView
@@ -1069,7 +1071,9 @@ const HomeScreen = () => {
                             ]}
                           >
                             <feature.icon size={32} color={feature.color} />
-                            <Text style={styles.featureTitle}>{feature.title}</Text>
+                            <Text style={styles.featureTitle}>
+                              {feature.title}
+                            </Text>
                             <Text style={styles.featureDescription}>
                               {feature.description}
                             </Text>
@@ -1568,7 +1572,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 0,
   },
-  
+
   // Pattern Styles
   splashPatternContainer: {
     position: "absolute",
@@ -1638,7 +1642,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
     paddingHorizontal: 20,
   },
-  
+
   // Logo Container Styles (without background circles)
   splashLogoContainer: {
     marginVertical: 15,
@@ -1649,15 +1653,15 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
   },
-  
+
   splashProjectContainer: {
     marginTop: 25,
     alignItems: "center",
     justifyContent: "center",
   },
   splashBottomLogo: {
-    width: 120,
-    height: 120,
+    width: 40,
+    height: 40,
   },
 
   // Blur Overlay
@@ -1669,7 +1673,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 10,
   },
-  
+
   // Text Styles
   splashTitle: {
     fontSize: 24,

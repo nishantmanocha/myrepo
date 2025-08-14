@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  SafeAreaView,
   StatusBar,
 } from "react-native";
 import {
@@ -27,6 +26,7 @@ import DebitSimulation from "../../../components/DebitSimulation";
 import QuizSimulation from "../../../components/QuizSimulation";
 import SecurityTips from "../../../components/SecurityTips";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Step =
   | "intro"

@@ -18,6 +18,8 @@ import axios from "axios";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useReports } from "../contexts/ReportContext";
 import { useNavigation } from "@react-navigation/native";
+import { ensurePermission } from "../utils/permissions";
+import { openSettings, RESULTS } from "react-native-permissions";
 // import SecureTextInput from "./SecureTextInput";
 
 const SCAM_TYPES = [
@@ -89,7 +91,7 @@ const ReportForm: React.FC = () => {
     }
     try {
       const res = await axios.get(
-       ` https://maps.gomaps.pro/maps/api/place/autocomplete/json`,
+        ` https://maps.gomaps.pro/maps/api/place/autocomplete/json`,
         { params: { input: text, key: apiKey } }
       );
       if (res.data.predictions) setPredictions(res.data.predictions);
@@ -119,15 +121,49 @@ const ReportForm: React.FC = () => {
   };
 
   const useCurrentLocation = async () => {
+    let result = await ensurePermission("location");
     try {
-      const loc = await Location.getCurrentPositionAsync({});
-      setLocation({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
+      if (result === RESULTS.BLOCKED) {
+        Alert.alert(
+          "Permission Required",
+          "Please enable location permission from settings to use maps.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => openSettings() },
+          ]
+        );
+        return;
+      }
+
+      if (result !== RESULTS.GRANTED) {
+        result = await ensurePermission("location");
+        if (result !== RESULTS.GRANTED) return;
+      }
+
+      // 2. Check if location services (GPS) are enabled
+      const servicesEnabled = await Location.hasServicesEnabledAsync();
+      if (!servicesEnabled) {
+        Alert.alert(
+          "Location Services Off",
+          "Please enable GPS/location services to use this feature.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
+      // 3. Get location
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+        mayShowUserSettingsDialog: true, // Helps on Android release builds
       });
 
+      setLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      Alert.alert("Success", "Location detected.");
+
       const res = await axios.get(
-        `https://maps.gomaps.pro/maps/api/geocode/json?latlng=${loc.coords.latitude},${loc.coords.longitude}&key=${apiKey}`
+        `https://maps.gomaps.pro/maps/api/geocode/json?latlng=${location.coords.latitude},${location.coords.longitude}&key=${apiKey}`
       );
 
       if (res.data.results.length > 0) {
@@ -162,23 +198,19 @@ const ReportForm: React.FC = () => {
 
     try {
       const SERVER_URL = process.env.SERVER_URL;
-      const { success, data, error } = await apiCall('/reports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type,
-          description,
-          contactInfo,
-          address,
-          city,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        }),
+      const { data } = await API.post("/reports", {
+        type,
+        description,
+        contactInfo,
+        address,
+        city,
+        latitude: location.latitude,
+        longitude: location.longitude,
       });
 
-      if (!success) {
-        throw new Error(error || 'Failed to submit report');
-      }
+      // if (!success) {
+      //   throw new Error(error || "Failed to submit report");
+      // }
 
       addReport(data);
 

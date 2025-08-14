@@ -167,7 +167,7 @@ export default function DetailsScreen() {
                 <Text style={styles.label}>Mobile Number *</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="+91 9876543210"
+                  placeholder="Enter your mobile number"
                   placeholderTextColor="#9CA3AF"
                   value={formData.phone}
                   onChangeText={(value) => updateField("phone", value)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,14 +7,21 @@ import {
   SafeAreaView,
   Dimensions,
   StatusBar,
-} from 'react-native';
-import { Wifi, Battery, Clock, Smartphone, TriangleAlert as AlertTriangle, Eye } from 'lucide-react-native';
+} from "react-native";
+import {
+  Wifi,
+  Battery,
+  Clock,
+  Smartphone,
+  TriangleAlert as AlertTriangle,
+  Eye,
+} from "lucide-react-native";
 
 interface SMSSimulationProps {
   onNext: () => void;
 }
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const SMSSimulation = ({ onNext }: SMSSimulationProps) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -48,16 +55,16 @@ const SMSSimulation = ({ onNext }: SMSSimulationProps) => {
               </View>
               <View style={styles.messageContent}>
                 <View style={styles.messageHeader}>
-                  <Text style={styles.senderName}>PSB-Alert</Text>
-                  <Text style={styles.phoneNumber}>+91-9876543210</Text>
+                  <Text style={styles.senderName}>ABC-Alert</Text>
+                  <Text style={styles.phoneNumber}>+91-98765xxxxx</Text>
                 </View>
                 <View style={styles.messageBubble}>
                   <Text style={styles.messageText}>
-                    [PSB-Alert]: Dear Customer, we have temporarily locked your account due to unusual login attempts.
-                    {'\n\n'}
-                    Verify immediately at: http://psbverify-alerts.online
-                    {'\n\n'}
-                    - Punjab & Sind Bank Security Team
+                    [ABC-Alert]: Dear Customer, we have temporarily locked your
+                    account due to unusual login attempts.
+                    {"\n\n"}
+                    Verify immediately at: http://abcverify-alerts.online
+                    {"\n\n"}- ABC Bank Security Team
                   </Text>
                 </View>
                 <View style={styles.messageTime}>
@@ -86,7 +93,9 @@ const SMSSimulation = ({ onNext }: SMSSimulationProps) => {
                 onPress={() => setShowDetails(true)}
               >
                 <Eye size={16} color="#374151" strokeWidth={2} />
-                <Text style={styles.detailsButtonText}>What makes this suspicious?</Text>
+                <Text style={styles.detailsButtonText}>
+                  What makes this suspicious?
+                </Text>
               </TouchableOpacity>
             )}
 
@@ -99,26 +108,36 @@ const SMSSimulation = ({ onNext }: SMSSimulationProps) => {
                 <View style={styles.flagsList}>
                   <View style={styles.flagItem}>
                     <View style={styles.flagDot} />
-                    <Text style={styles.flagText}>Suspicious URL (not official PSB domain)</Text>
+                    <Text style={styles.flagText}>
+                      Suspicious URL (not official Bank domain)
+                    </Text>
                   </View>
                   <View style={styles.flagItem}>
                     <View style={styles.flagDot} />
-                    <Text style={styles.flagText}>Creates urgency and panic</Text>
+                    <Text style={styles.flagText}>
+                      Creates urgency and panic
+                    </Text>
                   </View>
                   <View style={styles.flagItem}>
                     <View style={styles.flagDot} />
-                    <Text style={styles.flagText}>Asks to "verify details" via link</Text>
+                    <Text style={styles.flagText}>
+                      Asks to "verify details" via link
+                    </Text>
                   </View>
                   <View style={styles.flagItem}>
                     <View style={styles.flagDot} />
-                    <Text style={styles.flagText}>Generic greeting "Dear Customer"</Text>
+                    <Text style={styles.flagText}>
+                      Generic greeting "Dear Customer"
+                    </Text>
                   </View>
                 </View>
               </View>
             )}
 
             <TouchableOpacity style={styles.nextButton} onPress={onNext}>
-              <Text style={styles.nextButtonText}>Click the Suspicious Link (Safe Simulation)</Text>
+              <Text style={styles.nextButtonText}>
+                Click the Suspicious Link (Safe Simulation)
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -130,139 +149,139 @@ const SMSSimulation = ({ onNext }: SMSSimulationProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#0F172A",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   phoneFrame: {
-    backgroundColor: '#1E293B',
+    backgroundColor: "#1E293B",
     borderRadius: 40,
     padding: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 16 },
     shadowOpacity: 0.4,
     shadowRadius: 32,
     elevation: 24,
   },
   phone: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 32,
     width: width * 0.8,
     height: 640,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   statusBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: "#F8F9FA",
   },
   time: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   statusIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   signal: {
     fontSize: 10,
-    color: '#000',
+    color: "#000",
   },
   battery: {
     fontSize: 10,
-    color: '#000',
+    color: "#000",
   },
   messagesHeader: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     padding: 16,
   },
   messagesTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#FFF',
+    fontWeight: "600",
+    color: "#FFF",
   },
   messageThread: {
     padding: 16,
     flex: 1,
   },
   messageContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   avatarContainer: {
     width: 32,
     height: 32,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: "#E5E7EB",
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   messageContent: {
     flex: 1,
   },
   messageHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 4,
   },
   senderName: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   phoneNumber: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
   },
   messageBubble: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: "#F3F4F6",
     borderRadius: 12,
     padding: 12,
-    maxWidth: '90%',
+    maxWidth: "90%",
     marginBottom: 4,
   },
   messageText: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     lineHeight: 20,
   },
   messageTime: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   timeText: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
   },
   educationalOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    backgroundColor: "rgba(255, 255, 255, 0.98)",
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: "#F1F5F9",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   overlayHeader: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 16,
   },
   simulationBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EF4444',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EF4444",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -270,78 +289,78 @@ const styles = StyleSheet.create({
   },
   simulationBadgeText: {
     fontSize: 13,
-    color: '#FFF',
-    fontWeight: '600',
+    color: "#FFF",
+    fontWeight: "600",
   },
   overlayDescription: {
     fontSize: 14,
-    color: '#64748B',
+    color: "#64748B",
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
   },
   detailsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F8FAFC',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F8FAFC",
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: "#E2E8F0",
     gap: 8,
   },
   detailsButtonText: {
     fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
+    color: "#374151",
+    fontWeight: "500",
   },
   detailsCard: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: "#FEF2F2",
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: "#FECACA",
   },
   detailsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 16,
   },
   detailsTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#DC2626',
+    fontWeight: "600",
+    color: "#DC2626",
   },
   flagsList: {
     gap: 12,
   },
   flagItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 12,
   },
   flagDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#DC2626',
+    backgroundColor: "#DC2626",
     marginTop: 6,
   },
   flagText: {
     fontSize: 13,
-    color: '#7F1D1D',
+    color: "#7F1D1D",
     lineHeight: 18,
     flex: 1,
   },
   nextButton: {
-    backgroundColor: '#EF4444',
+    backgroundColor: "#EF4444",
     padding: 16,
     borderRadius: 12,
-    shadowColor: '#EF4444',
+    shadowColor: "#EF4444",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -349,9 +368,9 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     fontSize: 16,
-    color: '#FFF',
-    fontWeight: '600',
-    textAlign: 'center',
+    color: "#FFF",
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
 

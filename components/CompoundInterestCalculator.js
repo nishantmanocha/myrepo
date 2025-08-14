@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,24 +7,30 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { Calculator, TrendingUp, DollarSign, Calendar, Percent, Layers } from 'lucide-react-native';
-import { LineChart } from 'react-native-chart-kit';
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import {
+  Calculator,
+  TrendingUp,
+  Percent,
+  Calendar,
+  Layers,
+} from "lucide-react-native";
+import { LineChart } from "react-native-chart-kit";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const CompoundInterestCalculator = () => {
-  const [principal, setPrincipal] = useState('');
-  const [rate, setRate] = useState('');
-  const [time, setTime] = useState('');
-  const [compoundFreq, setCompoundFreq] = useState('yearly');
+  const [principal, setPrincipal] = useState("");
+  const [rate, setRate] = useState("");
+  const [time, setTime] = useState("");
+  const [compoundFreq, setCompoundFreq] = useState("yearly");
   const [result, setResult] = useState(null);
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -32,11 +38,16 @@ const CompoundInterestCalculator = () => {
 
   const getCompoundTimes = () => {
     switch (compoundFreq) {
-      case 'yearly': return 1;
-      case 'half-yearly': return 2;
-      case 'quarterly': return 4;
-      case 'monthly': return 12;
-      default: return 1;
+      case "yearly":
+        return 1;
+      case "half-yearly":
+        return 2;
+      case "quarterly":
+        return 4;
+      case "monthly":
+        return 12;
+      default:
+        return 1;
     }
   };
 
@@ -72,7 +83,6 @@ const CompoundInterestCalculator = () => {
       {/* Input Section */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <DollarSign size={20} color="#0066cc" />
           <Text style={styles.cardTitle}>Enter Investment Details</Text>
         </View>
 
@@ -165,39 +175,50 @@ const CompoundInterestCalculator = () => {
           {/* Graph */}
           <View style={styles.chartWrapper}>
             <Text style={styles.chartTitle}>Growth Over Time</Text>
-            <LineChart
-              data={{
-                labels: Array.from({ length: parseInt(time) + 1 }, (_, i) => `${i} yr`),
-                datasets: [
-                  {
-                    data: Array.from({ length: parseInt(time) + 1 }, (_, i) =>
-                      parseFloat(principal) * Math.pow(1 + (parseFloat(rate) / 100) / getCompoundTimes(), getCompoundTimes() * i)
-                    ),
-                    color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
-                    strokeWidth: 2,
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <LineChart
+                data={{
+                  labels: Array.from(
+                    { length: parseInt(time) + 1 },
+                    (_, i) => `${i} yr`
+                  ),
+                  datasets: [
+                    {
+                      data: Array.from(
+                        { length: parseInt(time) + 1 },
+                        (_, i) =>
+                          parseFloat(principal) *
+                          Math.pow(
+                            1 + parseFloat(rate) / 100 / getCompoundTimes(),
+                            getCompoundTimes() * i
+                          )
+                      ),
+                      color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
+                      strokeWidth: 2,
+                    },
+                  ],
+                  legend: ["Total Amount"],
+                }}
+                width={Math.max(screenWidth - 64, (parseInt(time) + 1) * 60)}
+                height={180}
+                yAxisLabel="₹"
+                chartConfig={{
+                  backgroundColor: "#ffffff",
+                  backgroundGradientFrom: "#f9fafb",
+                  backgroundGradientTo: "#f9fafb",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  propsForDots: {
+                    r: "3",
+                    strokeWidth: "2",
+                    stroke: "#ffffff",
                   },
-                ],
-                legend: ['Total Amount'],
-              }}
-              width={Math.min(screenWidth - 64, 320)}
-              height={160}
-              yAxisLabel="₹"
-              chartConfig={{
-                backgroundColor: '#ffffff',
-                backgroundGradientFrom: '#f9fafb',
-                backgroundGradientTo: '#f9fafb',
-                decimalPlaces: 2,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                propsForDots: {
-                  r: '3',
-                  strokeWidth: '2',
-                  stroke: '#ffffff',
-                },
-              }}
-              bezier
-              style={{ borderRadius: 16 }}
-            />
+                }}
+                bezier
+                style={{ borderRadius: 16 }}
+              />
+            </ScrollView>
           </View>
         </View>
       )}
@@ -207,29 +228,91 @@ const CompoundInterestCalculator = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { alignItems: 'center', marginBottom: 32 },
-  titleContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
-  subtitle: { fontSize: 16, color: '#64748b', textAlign: 'center', maxWidth: 300 },
-  card: { backgroundColor: '#ffffff', borderRadius: 16, padding: 24, marginHorizontal: 16, marginBottom: 20, elevation: 4 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, gap: 8 },
-  cardTitle: { fontSize: 18, fontWeight: '600', color: '#1e293b' },
+  header: { alignItems: "center", marginBottom: 32 },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 8,
+  },
+  title: { fontSize: 24, fontWeight: "bold", color: "#1e293b" },
+  subtitle: {
+    fontSize: 16,
+    color: "#64748b",
+    textAlign: "center",
+    maxWidth: 300,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 24,
+    marginHorizontal: 16,
+    marginBottom: 20,
+    elevation: 4,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 8,
+  },
+  cardTitle: { fontSize: 18, fontWeight: "600", color: "#1e293b" },
   inputContainer: { marginBottom: 16 },
-  labelContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 4 },
-  label: { fontSize: 14, fontWeight: '500', color: '#374151' },
-  input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, backgroundColor: '#f9fafb' },
-  pickerContainer: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, backgroundColor: '#f9fafb' },
-  picker: { height: 50, width: '100%' },
-  calculateButton: { backgroundColor: '#0066cc', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderRadius: 8, gap: 8 },
-  calculateButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  labelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 4,
+  },
+  label: { fontSize: 14, fontWeight: "500", color: "#374151" },
+  input: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    backgroundColor: "#f9fafb",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    backgroundColor: "#f9fafb",
+  },
+  picker: { height: 50, width: "100%" },
+  calculateButton: {
+    backgroundColor: "#0066cc",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 8,
+    gap: 8,
+  },
+  calculateButtonText: { color: "#ffffff", fontSize: 16, fontWeight: "600" },
   resultContainer: { gap: 16 },
-  resultItem: { backgroundColor: '#f3f4f6', borderRadius: 8, padding: 16 },
-  totalAmountItem: { backgroundColor: '#dcfce7', borderWidth: 1, borderColor: '#bbf7d0' },
-  resultLabel: { fontSize: 14, color: '#64748b', marginBottom: 4 },
-  resultValue: { fontSize: 24, fontWeight: 'bold', color: '#0066cc' },
-  totalAmountValue: { color: '#10b981' },
-  chartWrapper: { marginTop: 24, backgroundColor: '#f3f4f6', borderRadius: 16, padding: 16, alignItems: 'center', justifyContent: 'center' },
-  chartTitle: { fontWeight: 'bold', fontSize: 16, marginBottom: 8, textAlign: 'center' },
+  resultItem: { backgroundColor: "#f3f4f6", borderRadius: 8, padding: 16 },
+  totalAmountItem: {
+    backgroundColor: "#dcfce7",
+    borderWidth: 1,
+    borderColor: "#bbf7d0",
+  },
+  resultLabel: { fontSize: 14, color: "#64748b", marginBottom: 4 },
+  resultValue: { fontSize: 24, fontWeight: "bold", color: "#0066cc" },
+  totalAmountValue: { color: "#10b981" },
+  chartWrapper: {
+    marginTop: 24,
+    backgroundColor: "#f3f4f6",
+    borderRadius: 16,
+    padding: 16,
+  },
+  chartTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: "center",
+  },
 });
 
 export default CompoundInterestCalculator;

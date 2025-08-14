@@ -232,10 +232,11 @@ export function FraudAnalyzer() {
     const typeText = type === "email" ? "Email" : "Website";
 
     if (level === "safe") {
-      return `${typeText} analysis complete. ${flagCount === 0
-        ? "No security issues detected."
-        : `${flagCount} minor issue(s) found.`
-        } This appears to be legitimate and safe to interact with.`;
+      return `${typeText} analysis complete. ${
+        flagCount === 0
+          ? "No security issues detected."
+          : `${flagCount} minor issue(s) found.`
+      } This appears to be legitimate and safe to interact with.`;
     } else if (level === "suspicious") {
       return `${typeText} analysis complete. Found ${flagCount} security concern(s). Exercise caution and verify authenticity through official channels before taking any action.`;
     } else {
@@ -282,13 +283,18 @@ export function FraudAnalyzer() {
       } as AnalysisHistory;
       setHistory((prev) => [historyItem, ...prev.slice(0, 9)]);
       triggerHaptic();
-      Alert.alert("Analysis Complete", `Result: ${data.verdict} (Score: ${data.final_score}/100)`);
+      Alert.alert(
+        "Analysis Complete",
+        `Result: ${data.verdict} (Score: ${data.final_score}/100)`
+      );
     } catch (error) {
-      Alert.alert("Analysis Failed", "Could not analyze email. Please try again.");
+      Alert.alert(
+        "Analysis Failed",
+        "Could not analyze email. Please try again."
+      );
     } finally {
       setIsAnalyzing(false);
       setProgress(0);
-
     }
   };
 
@@ -444,8 +450,8 @@ export function FraudAnalyzer() {
                       result.score < 50
                         ? "destructive"
                         : result.score < 80
-                          ? "secondary"
-                          : "default"
+                        ? "secondary"
+                        : "default"
                     }
                     style={[styles.levelBadge, { marginRight: 8 }]}
                   >
@@ -530,8 +536,8 @@ export function FraudAnalyzer() {
                           scan.virustotal_score >= 7
                             ? "destructive"
                             : scan.virustotal_score >= 4
-                              ? "secondary"
-                              : "outline"
+                            ? "secondary"
+                            : "outline"
                         }
                         style={styles.flagBadge}
                       >
@@ -757,7 +763,7 @@ export function FraudAnalyzer() {
                     Detected Issues:
                   </Text>
                   {selectedHistory.result.reason &&
-                    selectedHistory.result.reason.length > 0 ? (
+                  selectedHistory.result.reason.length > 0 ? (
                     selectedHistory.result.reason.map((msg, idx) => (
                       <Text
                         key={idx}
@@ -872,7 +878,7 @@ export function FraudAnalyzer() {
                   name="mail"
                   size={18}
                   color={activeTab === "email" ? "#10b981" : "#9ca3af"}
-                  style={{ marginRight: 16 }}
+                  // style={{ marginRight: 16 }}
                 />
                 <Text
                   style={[
@@ -880,7 +886,7 @@ export function FraudAnalyzer() {
                     { color: activeTab === "email" ? "#10b981" : "#9ca3af" },
                   ]}
                 >
-                  Email Analysis
+                  Email
                 </Text>
               </TabsTrigger>
               <TabsTrigger value="website" style={styles.tabTrigger}>
@@ -892,10 +898,12 @@ export function FraudAnalyzer() {
                 <Text
                   style={[
                     styles.tabText,
-                    { color: activeTab === "website" ? "#10b981" : "#9ca3af" },
+                    {
+                      color: activeTab === "website" ? "#10b981" : "#9ca3af",
+                    },
                   ]}
                 >
-                  Website Analysis
+                  Website
                 </Text>
               </TabsTrigger>
               <TabsTrigger value="history" style={styles.tabTrigger}>
@@ -956,8 +964,8 @@ export function FraudAnalyzer() {
                           progress < 50
                             ? "default"
                             : progress < 80
-                              ? "warning"
-                              : "success"
+                            ? "warning"
+                            : "success"
                         }
                         style={styles.progress}
                       />
@@ -1025,8 +1033,8 @@ export function FraudAnalyzer() {
                           progress < 50
                             ? "default"
                             : progress < 80
-                              ? "warning"
-                              : "success"
+                            ? "warning"
+                            : "success"
                         }
                         style={styles.progress}
                       />
@@ -1091,7 +1099,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "100%",
     paddingHorizontal: 20,
-    paddingVertical: 40,
+    paddingVertical: 28,
   },
   header: {
     alignItems: "center",

@@ -11,6 +11,7 @@ import {
   Image,
   Easing,
   Animated,
+  Platform,
 } from "react-native";
 import {
   TriangleAlert,
@@ -24,6 +25,9 @@ import {
   Star,
   Sparkles,
   Lock,
+  TrendingUp,
+  ShieldCheck,
+  Clock,
 } from "lucide-react-native";
 import ChatbotButton from "../../../components/ChatbotButton";
 import ChatbotPopup from "../../../components/ChatbotPopup";
@@ -178,29 +182,222 @@ const FloatingParticle: React.FC<{ delay: number; color: string }> = ({
   );
 };
 
-const ModuleCard: React.FC<{ module: SimulatorModule }> = ({ module }) => {
+const ModuleCard = ({ module }) => {
   const IconComponent = module.icon;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  const index = simulatorModules.indexOf(module);
+
+  useEffect(() => {
+    // Entrance animation
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600 + index * 100,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 800 + index * 100,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [index]);
+
+  const handlePressIn = () => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 0.96,
+        useNativeDriver: true,
+        tension: 150,
+        friction: 8,
+      }),
+
+      Animated.timing(glowAnim, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 150,
+        friction: 8,
+      }),
+      Animated.timing(glowAnim, {
+        toValue: 0,
+        duration: 200,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handlePress = () => {
+    router.push(module.route);
+  };
+
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 0.3],
+  });
+
+  const getDifficultyColor = (difficulty?: string) => {
+    switch (difficulty) {
+      case "Beginner":
+        return {
+          bg: "#DCFCE7",
+          text: "#166534",
+          accent: "#22C55E",
+        };
+      case "Intermediate":
+        return {
+          bg: "#FEF3C7",
+          text: "#92400E",
+          accent: "#F59E0B",
+        };
+      case "Advanced":
+        return {
+          bg: "#FEE2E2",
+          text: "#991B1B",
+          accent: "#EF4444",
+        };
+      default:
+        return {
+          bg: "#DBEAFE",
+          text: "#1E40AF",
+          accent: "#3B82F6",
+        };
+    }
+  };
+
+  const difficultyColors = getDifficultyColor(module.difficulty);
 
   return (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push(module.route)}
-      activeOpacity={0.9}
+    <Animated.View
+      style={[
+        styles.cardContainer,
+        {
+          opacity: opacityAnim,
+          transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
+        },
+      ]}
     >
-      <View style={styles.imageWrapper}>
-        <Image source={module.image} style={styles.cardImage} />
-      </View>
-      <View style={styles.cardRight}>
-        <View style={styles.cardTextContainer}>
-          <Text style={styles.cardTitle}>{module.title}</Text>
-          <Text style={styles.cardDescription}>{module.description}</Text>
+      <TouchableOpacity
+        style={styles.card}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={1}
+      >
+        {/* Glow effect */}
+        <Animated.View
+          style={[
+            styles.cardGlow,
+            {
+              opacity: glowOpacity,
+            },
+          ]}
+        />
+
+        {/* Header with category and difficulty */}
+        <View style={styles.cardHeader}>
+          <LinearGradient
+            colors={[PSBColors.primary.green, "#14B8A6"]}
+            style={styles.categoryBadge}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            <Zap size={12} color="#FFFFFF" strokeWidth={2.5} />
+            <Text style={styles.categoryText}>FRAUD DETECTION</Text>
+          </LinearGradient>
+
+          {module.difficulty && (
+            <View
+              style={[
+                styles.difficultyBadge,
+                { backgroundColor: difficultyColors.bg },
+              ]}
+            >
+              <View
+                style={[
+                  styles.difficultyDot,
+                  { backgroundColor: difficultyColors.accent },
+                ]}
+              />
+              <Text
+                style={[
+                  styles.difficultyText,
+                  { color: difficultyColors.text },
+                ]}
+              >
+                {module.difficulty}
+              </Text>
+            </View>
+          )}
         </View>
-        <View style={styles.cardRightBottom}>
-          <IconComponent size={20} color={PSBColors.primary.green} />
-          <ChevronRight size={20} color={PSBColors.text.secondary} />
+
+        {/* Main content */}
+        <View style={styles.cardContent}>
+          {/* Image section with overlay */}
+          <View style={styles.imageSection}>
+            <View style={styles.imageWrapper}>
+              <Image source={module.image} style={styles.cardImage} />
+              <LinearGradient
+                colors={["rgba(0, 64, 37, 0.1)", "rgba(0, 64, 37, 0.05)"]}
+                style={styles.imageOverlay}
+              ></LinearGradient>
+            </View>
+          </View>
+
+          {/* Text content */}
+          <View style={styles.textSection}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.cardTitle}>{module.title}</Text>
+              <View style={styles.titleUnderline} />
+            </View>
+
+            <Text style={styles.cardDescription}>{module.description}</Text>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
+
+        {/* Footer with action button */}
+        <View style={styles.cardFooter}>
+          <Text style={styles.progressText}>Ready to start</Text>
+
+          <TouchableOpacity onPress={handlePress}>
+            <LinearGradient
+              colors={[PSBColors.primary.green, "#14B8A6"]}
+              style={styles.actionButton}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.actionText}>Start Training</Text>
+              <ChevronRight size={18} color="#FFFFFF" strokeWidth={2.5} />
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        {/* Floating elements */}
+        {/* <View style={styles.floatingElements}>
+          <View style={[styles.floatingDot, { top: 20, right: 30 }]} />
+          <View
+            style={[styles.floatingDot, { bottom: 40, left: 25, opacity: 0.6 }]}
+          />
+        </View> */}
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
 
@@ -307,27 +504,9 @@ export default function SimulatorsScreen() {
                 </View>
               </View>
             </View>
-            {/* 
-            <View style={styles.heroStats}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>8</Text>
-                <Text style={styles.statLabel}>Professional Tools</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>99.9%</Text>
-                <Text style={styles.statLabel}>Accuracy Rate</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>24/7</Text>
-                <Text style={styles.statLabel}>Availability</Text>
-              </View>
-            </View> */}
           </Animated.View>
         </LinearGradient>
 
-        {/* <Text style={styles.sectionTitle}>Fraud Detection Modules</Text> */}
         <View style={styles.cardList}>
           {fraudModules.map((module) => (
             <ModuleCard key={module.id} module={module} />
@@ -397,33 +576,35 @@ const styles = StyleSheet.create({
   cardList: {
     gap: 20,
   },
-  card: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    overflow: "hidden",
-    ...PSBShadows.md,
-    alignSelf: "center",
-    padding: 12,
-    gap: 12,
-    elevation: 3,
-    width: width - 32,
-    minHeight: 120,
-  },
-  imageWrapper: {
-    width: "40%",
-    aspectRatio: 4 / 3, // or 4/3 if needed
-    borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: "transparent", // no background to avoid contrast
-    padding: 0,
-    margin: 0,
-  },
-  cardImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain", // you can switch to "contain" if still overflows
-  },
+  // card: {
+  //   flexDirection: "row",
+  //   backgroundColor: "#fff",
+  //   borderRadius: 16,
+  //   overflow: "hidden",
+  //   ...PSBShadows.md,
+  //   alignSelf: "center",
+  //   padding: 12,
+  //   gap: 12,
+  //   elevation: 3,
+  //   width: width - 32,
+  //   minHeight: 120,
+  //   borderColor: PSBColors.border.primary,
+  //   borderWidth: 1,
+  // },
+  // imageWrapper: {
+  //   width: "40%",
+  //   aspectRatio: 4 / 3, // or 4/3 if needed
+  //   borderRadius: 12,
+  //   overflow: "hidden",
+  //   backgroundColor: "transparent", // no background to avoid contrast
+  //   padding: 0,
+  //   margin: 0,
+  // },
+  // cardImage: {
+  //   width: "100%",
+  //   height: "100%",
+  //   resizeMode: "contain", // you can switch to "contain" if still overflows
+  // },
   cardRight: {
     flex: 1,
     justifyContent: "space-between",
@@ -575,7 +756,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
-    backdropFilter: "blur(10px)",
+    // backdropFilter: "blur(10px)",
   },
   statItem: {
     alignItems: "center",
@@ -612,5 +793,253 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     top: "20%",
     left: "20%",
+  },
+  cardContainer: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
+    overflow: "hidden",
+    position: "relative",
+    borderWidth: 1,
+    borderColor: "rgba(0, 64, 37, 0.08)",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.15,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 12,
+      },
+    }),
+  },
+  cardGlow: {
+    position: "absolute",
+    top: -4,
+    left: -4,
+    right: -4,
+    bottom: -4,
+    borderRadius: 28,
+    backgroundColor: PSBColors.primary.green,
+    zIndex: -1,
+  },
+  shimmerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    overflow: "hidden",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  shimmer: {
+    width: 100,
+    height: "100%",
+    backgroundColor: "rgba(0, 64, 37, 0.3)",
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    paddingBottom: 16,
+  },
+  categoryBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 6,
+    shadowColor: PSBColors.primary.green,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  categoryText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+  },
+  difficultyBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+  },
+  difficultyDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  difficultyText: {
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  cardContent: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    gap: 16,
+  },
+  imageSection: {
+    width: 140,
+  },
+  imageWrapper: {
+    width: "100%",
+    height: 100,
+    borderRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+    backgroundColor: PSBColors.background.tertiary,
+  },
+  cardImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  imageOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+  },
+  iconGradient: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  textSection: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  titleContainer: {
+    marginBottom: 8,
+  },
+  // cardTitle: {
+  //   fontSize: 20,
+  //   fontWeight: "800",
+  //   color: PSBColors.text.primary,
+  //   lineHeight: 26,
+  //   letterSpacing: -0.3,
+  // },
+  titleUnderline: {
+    width: 30,
+    height: 3,
+    backgroundColor: PSBColors.primary.green,
+    borderRadius: 2,
+    marginTop: 4,
+  },
+  // cardDescription: {
+  //   fontSize: 15,
+  //   color: PSBColors.text.secondary,
+  //   lineHeight: 22,
+  //   marginBottom: 12,
+  //   fontWeight: "500",
+  // },
+  metaContainer: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  metaText: {
+    fontSize: 13,
+    color: PSBColors.text.tertiary,
+    fontWeight: "600",
+  },
+  cardFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    paddingTop: 16,
+    // borderTopWidth: 1,
+    // borderTopColor: "rgba(0, 0, 0, 0.05)",
+    // backgroundColor: "rgba(248, 250, 252, 0.8)",
+  },
+  progressIndicator: {
+    flex: 1,
+    marginRight: 16,
+  },
+  progressBar: {
+    width: "100%",
+    height: 4,
+    backgroundColor: "rgba(0, 64, 37, 0.1)",
+    borderRadius: 2,
+    overflow: "hidden",
+    marginBottom: 4,
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: PSBColors.primary.green,
+    borderRadius: 2,
+  },
+  progressText: {
+    fontSize: 12.5,
+    color: PSBColors.text.tertiary,
+    fontWeight: "600",
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 20,
+    gap: 8,
+    shadowColor: PSBColors.primary.green,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    // elevation: 6,
+  },
+  actionText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    letterSpacing: 0.3,
+  },
+  floatingElements: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    pointerEvents: "none",
+  },
+  floatingDot: {
+    position: "absolute",
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "rgba(0, 64, 37, 0.15)",
   },
 });

@@ -6,6 +6,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { goBack } from "expo-router/build/global-state/routing";
 import { useEffect, useState } from "react";
 import API from "../../../api/api";
+import Loader from "../../../components/Loader";
 
 const fetchCourse = async (courseId) => {
   console.log("Fetching course with ID:", courseId);
@@ -18,33 +19,39 @@ export default function Lesson() {
   const { lessonId, courseId } = useLocalSearchParams();
   const [course, setCourse] = useState(null);
   const [lesson, setLesson] = useState(null);
-  // console.log(...lessons, courseId);
+  const [loading, setLoading] = useState(false);
+  const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
 
   useEffect(() => {
     async function course() {
+      setLoading(true);
       const course = await fetchCourse(courseId).then((res) => res.course);
       // console.log("Fetched course:", course);
       setCourse(course);
-      const progressData = await API.get(
-        `${process.env.SERVER_URL}/progress?type=course`
-      ).then((res) => res.data);
-      console.log("Progress data:", progressData);
+      const progressData = await API.get(`/progress?type=course`).then(
+        (res) => res.data
+      );
+      setCurrentLessonIndex(
+        progressData.progress[0]?.lessonIndex + 1 === course.lessons.length
+          ? 0
+          : progressData.progress[0]?.lessonIndex + 1
+      );
+      // setLesson(course.lessons[0]);
       progressData.progress.length !== 0
         ? setLesson(
             course.lessons[
-              `${
-                progressData.progress[0].lessonIndex ===
-                course.lessons.length - 1
-                  ? 0
-                  : progressData.progress[0].lessonIndex + 1
-              }`
+              progressData.progress[0].lessonIndex === course.lessons.length - 1
+                ? 0
+                : progressData.progress[0].lessonIndex + 1
             ]
           )
         : setLesson(course.lessons[0]);
+      setLoading(false);
     }
     course();
   }, [courseId]);
-  // console.log(lesson);
+  // console.log("Lesssssssson", lesson);
+  // console.log("Course", course);
 
   const handleLessonComplete = async () => {
     const nextLessonIndex =
@@ -63,6 +70,15 @@ export default function Lesson() {
     });
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <Loader />
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       {lesson && (
@@ -70,6 +86,8 @@ export default function Lesson() {
           lesson={lesson}
           onBack={() => goBack()}
           onComplete={handleLessonComplete}
+          totalLessons={course?.lessons?.length || 0}
+          currentLessonIndex={currentLessonIndex}
         />
       )}
     </SafeAreaView>

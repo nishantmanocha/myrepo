@@ -27,6 +27,7 @@ import { router } from "expo-router";
 // import { Scenario, ScenarioChoice, scenarios } from '../data/scenarios';
 import { apiCall } from "../utils/api";
 import API from "../api/api";
+import Loader from "./Loader";
 
 const { width } = Dimensions.get("window");
 
@@ -47,9 +48,11 @@ export const ScenarioSimulator: React.FC<ScenarioSimulatorProps> = ({
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timeSpent, setTimeSpent] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch scenario data from the server or local storage
+    setLoading(true);
     const fetchScenario = async () => {
       try {
         const response = await API.get(`/scenarios/${scenarioId}`);
@@ -57,9 +60,10 @@ export const ScenarioSimulator: React.FC<ScenarioSimulatorProps> = ({
         // Assuming your API returns data in response.data
         const data = response.data;
         console.log("Fetched scenario data:", data);
-        setCurrentScenario(data);
+        setCurrentScenario(data.scenario);
         setTimeLeft(data.timeLimit || null);
         setStartTime(new Date());
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch scenario:", error);
         Alert.alert("Error", "Failed to load scenario data");
@@ -156,6 +160,21 @@ export const ScenarioSimulator: React.FC<ScenarioSimulatorProps> = ({
         return <Brain size={20} color="#6b7280" />;
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <Loader />
+      </SafeAreaView>
+    );
+    <SafeAreaView
+      style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+    >
+      <Loader />
+    </SafeAreaView>;
+  }
 
   if (!currentScenario) {
     return (

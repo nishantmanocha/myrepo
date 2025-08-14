@@ -47,7 +47,7 @@ const ProfileScreen = () => {
   const userProfile = useSelector((state: any) => state.profile?.user);
   const [userData, setUserData] = useState(null);
 
-  const progress = useSharedValue(0);
+  // const progress = useSharedValue(0);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -84,13 +84,13 @@ const ProfileScreen = () => {
   const progressPercentage =
     (userStats.experiencePoints / userStats.nextLevelXP) * 100;
 
-  useEffect(() => {
-    progress.value = withTiming(progressPercentage, { duration: 800 });
-  }, [progressPercentage]);
+  // useEffect(() => {
+  //   progress.value = withTiming(progressPercentage, { duration: 800 });
+  // }, [progressPercentage]);
 
-  const animatedProgressStyle = useAnimatedStyle(() => {
-    return { width: `${progress.value}%` };
-  });
+  // const animatedProgressStyle = useAnimatedStyle(() => {
+  //   return { width: `${progress.value}%` };
+  // });
 
   const badges = [
     { name: "Red Flag Spotter", icon: Flag, color: "#ff6b6b", earned: true },
@@ -186,7 +186,7 @@ const ProfileScreen = () => {
           </Animatable.View>
 
           {/* Progress Section */}
-          <Animatable.View
+          {/* <Animatable.View
             animation="fadeInUp"
             delay={200}
             duration={600}
@@ -215,7 +215,7 @@ const ProfileScreen = () => {
                 level
               </Text>
             </View>
-          </Animatable.View>
+          </Animatable.View> */}
 
           <Goals />
 

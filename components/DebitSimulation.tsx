@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  Dimensions,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface DebitSimulationProps {
   onNext: () => void;
 }
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const DebitSimulation = ({ onNext }: DebitSimulationProps) => {
   const [showMessage, setShowMessage] = useState(false);
@@ -22,7 +17,7 @@ const DebitSimulation = ({ onNext }: DebitSimulationProps) => {
     const timer1 = setTimeout(() => setShowMessage(true), 1000);
     const timer2 = setTimeout(() => setShowPanic(true), 3000);
     const timer3 = setTimeout(() => onNext(), 8000);
-    
+
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -53,29 +48,59 @@ const DebitSimulation = ({ onNext }: DebitSimulationProps) => {
                   <Text style={styles.panicTitle}>😱 The Panic Sets In</Text>
                 </View>
                 <Text style={styles.panicDescription}>
-                  This is the moment victims realize they've been scammed. 
+                  This is the moment victims realize they've been scammed.
                   ₹24,000 is gone, and it's often very difficult to recover.
                 </Text>
               </View>
 
               <View style={styles.responseCard}>
-                <Text style={styles.responseTitle}>Typical Victim Response:</Text>
+                <Text style={styles.responseTitle}>
+                  Typical Victim Response:
+                </Text>
                 <View style={styles.responseList}>
                   <View style={styles.responseItem}>
-                    <View style={[styles.responseDot, { backgroundColor: '#DC2626' }]} />
-                    <Text style={styles.responseText}>Immediately calls the bank</Text>
+                    <View
+                      style={[
+                        styles.responseDot,
+                        { backgroundColor: "#DC2626" },
+                      ]}
+                    />
+                    <Text style={styles.responseText}>
+                      Immediately calls the bank
+                    </Text>
                   </View>
                   <View style={styles.responseItem}>
-                    <View style={[styles.responseDot, { backgroundColor: '#F59E0B' }]} />
-                    <Text style={styles.responseText}>Reports to cyber crime</Text>
+                    <View
+                      style={[
+                        styles.responseDot,
+                        { backgroundColor: "#F59E0B" },
+                      ]}
+                    />
+                    <Text style={styles.responseText}>
+                      Reports to cyber crime
+                    </Text>
                   </View>
                   <View style={styles.responseItem}>
-                    <View style={[styles.responseDot, { backgroundColor: '#EAB308' }]} />
-                    <Text style={styles.responseText}>Blocks all cards and accounts</Text>
+                    <View
+                      style={[
+                        styles.responseDot,
+                        { backgroundColor: "#EAB308" },
+                      ]}
+                    />
+                    <Text style={styles.responseText}>
+                      Blocks all cards and accounts
+                    </Text>
                   </View>
                   <View style={styles.responseItem}>
-                    <View style={[styles.responseDot, { backgroundColor: '#6B7280' }]} />
-                    <Text style={styles.responseText}>Money recovery: Often unsuccessful</Text>
+                    <View
+                      style={[
+                        styles.responseDot,
+                        { backgroundColor: "#6B7280" },
+                      ]}
+                    />
+                    <Text style={styles.responseText}>
+                      Money recovery: Often unsuccessful
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -88,12 +113,15 @@ const DebitSimulation = ({ onNext }: DebitSimulationProps) => {
               <Text style={styles.simulationBadgeText}>🎓 SIMULATION</Text>
             </View>
             <Text style={styles.overlayDescription}>
-              This represents the devastating moment when victims realize they've lost money to a scam.
+              This represents the devastating moment when victims realize
+              they've lost money to a scam.
             </Text>
-            
+
             <View style={styles.loadingContainer}>
               {showPanic ? (
-                <Text style={styles.nextText}>Proceeding to protection tips...</Text>
+                <Text style={styles.nextText}>
+                  Proceeding to protection tips...
+                </Text>
               ) : (
                 <Text style={styles.loadingText}>Loading...</Text>
               )}
@@ -108,54 +136,54 @@ const DebitSimulation = ({ onNext }: DebitSimulationProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E293B',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#1E293B",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 16,
   },
   phoneFrame: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     borderRadius: 32,
     padding: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 20,
   },
   phone: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 24,
     width: width * 0.8,
     height: 600,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   statusBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: "#F8F9FA",
   },
   time: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   statusIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   signal: {
     fontSize: 10,
-    color: '#000',
+    color: "#000",
   },
   battery: {
     fontSize: 10,
-    color: '#000',
+    color: "#000",
   },
   content: {
     padding: 16,
@@ -163,48 +191,48 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   panicCard: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: "#FEF2F2",
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: "#FECACA",
   },
   panicHeader: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 12,
   },
   panicTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#DC2626',
+    fontWeight: "bold",
+    color: "#DC2626",
     marginTop: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   panicDescription: {
     fontSize: 14,
-    color: '#374151',
-    textAlign: 'center',
+    color: "#374151",
+    textAlign: "center",
     lineHeight: 20,
   },
   responseCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: "#E5E7EB",
   },
   responseTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
     marginBottom: 12,
   },
   responseList: {
     gap: 8,
   },
   responseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   responseDot: {
@@ -214,49 +242,49 @@ const styles = StyleSheet.create({
   },
   responseText: {
     fontSize: 12,
-    color: '#374151',
+    color: "#374151",
     flex: 1,
   },
   educationalOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: "#E5E7EB",
   },
   simulationBadge: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: "#E5E7EB",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginBottom: 8,
   },
   simulationBadgeText: {
     fontSize: 12,
-    color: '#374151',
-    fontWeight: '600',
+    color: "#374151",
+    fontWeight: "600",
   },
   overlayDescription: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   loadingContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   loadingText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   nextText: {
     fontSize: 14,
-    color: '#3B82F6',
-    fontWeight: '600',
+    color: "#3B82F6",
+    fontWeight: "600",
   },
 });
 

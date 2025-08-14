@@ -6,6 +6,7 @@ import { ScenarioSimulator } from "../../../components/ScenarioSimulator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API from "../../../api/api"; // Adjust the import path as necessary
 import axios from "axios";
+import Loader from "../../../components/Loader";
 
 const COMPLETED_SCENARIOS_KEY = "completed_scenarios";
 
@@ -14,6 +15,7 @@ export default function ScenarioHub() {
     null
   );
   const [completedScenarios, setCompletedScenarios] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadCompletedScenarios();
@@ -21,6 +23,7 @@ export default function ScenarioHub() {
 
   const loadCompletedScenarios = async () => {
     try {
+      setLoading(true);
       const response = await API.get(`/progress?type=scenario`);
       const data = response.data;
 
@@ -36,6 +39,7 @@ export default function ScenarioHub() {
           JSON.stringify(completed)
         );
       }
+      setLoading(false);
 
       // If you want to fallback to local storage if no progress is returned
       // else {
@@ -72,6 +76,16 @@ export default function ScenarioHub() {
   const handleExit = () => {
     setCurrentScenarioId(null);
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <Loader />
+      </SafeAreaView>
+    );
+  }
 
   if (currentScenarioId) {
     return (

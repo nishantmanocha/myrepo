@@ -5,13 +5,13 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
 } from "react-native";
 import { Calculator, Upload, Target, FileText } from "lucide-react-native";
 import TaxCalculator from "../../../components/TaxCalculator";
-import BankDataImport from "../../../components/BankDataImport";
+// import BankDataImport from "../../../components/BankDataImport";
 import ReceiptUpload from "../../../components/ReceiptUpload";
 import PDFReportGenerator from "../../../components/PDFReportGenerator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const TaxCalculatorPage = () => {
   const [activeTab, setActiveTab] = useState("calculator");
@@ -45,7 +45,7 @@ const TaxCalculatorPage = () => {
 
   const tabs = [
     { id: "calculator", label: "Calculator", icon: Calculator },
-    { id: "bank-import", label: "Bank Data", icon: Upload },
+    // { id: "bank-import", label: "Bank Data", icon: Upload },
     { id: "ocr", label: "OCR Scanner", icon: FileText },
     { id: "reports", label: "Reports", icon: Target },
   ];
@@ -84,19 +84,19 @@ const TaxCalculatorPage = () => {
             setIsCalculated={setIsCalculated}
           />
         );
-      case "bank-import":
-        return (
-          <BankDataImport
-            onDataImport={(data) => {
-              setIncome(data.annualIncome.toString());
-              setDeductions80C(data.section80C);
-              setDeductions80D(data.section80D);
-              setDeductions80G(data.section80G);
-              setHomeLoanInterest(data.homeLoanInterest);
-              setActiveTab("calculator");
-            }}
-          />
-        );
+      // case "bank-import":
+      //   return (
+      //     <BankDataImport
+      //       onDataImport={(data) => {
+      //         setIncome(data.annualIncome.toString());
+      //         setDeductions80C(data.section80C);
+      //         setDeductions80D(data.section80D);
+      //         setDeductions80G(data.section80G);
+      //         setHomeLoanInterest(data.homeLoanInterest);
+      //         setActiveTab("calculator");
+      //       }}
+      //     />
+      //   );
       case "ocr":
         return <ReceiptUpload />;
       case "reports":
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   header: {
-    paddingTop: 40,
+    paddingTop: 16,
     paddingBottom: 20,
     backgroundColor: "#3b82f6",
     alignItems: "center",

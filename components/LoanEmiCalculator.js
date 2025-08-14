@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,26 +6,32 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  ScrollView
-} from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
-import { Calculator, CreditCard, DollarSign, Calendar, Percent } from 'lucide-react-native';
+  ScrollView,
+} from "react-native";
+import { BarChart } from "react-native-chart-kit";
+import {
+  Calculator,
+  CreditCard,
+  DollarSign,
+  Calendar,
+  Percent,
+} from "lucide-react-native";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const LoanEmiCalculator = () => {
-  const [loanAmount, setLoanAmount] = useState('');
-  const [annualRate, setAnnualRate] = useState('');
-  const [tenure, setTenure] = useState('');
+  const [loanAmount, setLoanAmount] = useState("");
+  const [annualRate, setAnnualRate] = useState("");
+  const [tenure, setTenure] = useState("");
   const [result, setResult] = useState(null);
   const [errors, setErrors] = useState({
-    loanAmount: '',
-    annualRate: '',
-    tenure: ''
+    loanAmount: "",
+    annualRate: "",
+    tenure: "",
   });
 
   const validateInputs = () => {
-    const newErrors = { loanAmount: '', annualRate: '', tenure: '' };
+    const newErrors = { loanAmount: "", annualRate: "", tenure: "" };
     let isValid = true;
 
     const loanAmountNum = parseFloat(loanAmount);
@@ -33,17 +39,17 @@ const LoanEmiCalculator = () => {
     const tenureNum = parseFloat(tenure);
 
     if (!loanAmount || loanAmountNum <= 0) {
-      newErrors.loanAmount = 'Loan amount must be greater than 0';
+      newErrors.loanAmount = "Loan amount must be greater than 0";
       isValid = false;
     }
 
     if (!annualRate || annualRateNum < 0) {
-      newErrors.annualRate = 'Interest rate must be 0 or greater';
+      newErrors.annualRate = "Interest rate must be 0 or greater";
       isValid = false;
     }
 
     if (!tenure || tenureNum <= 0 || !Number.isInteger(tenureNum)) {
-      newErrors.tenure = 'Tenure must be a positive whole number';
+      newErrors.tenure = "Tenure must be a positive whole number";
       isValid = false;
     }
 
@@ -52,9 +58,9 @@ const LoanEmiCalculator = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -92,15 +98,20 @@ const LoanEmiCalculator = () => {
   };
 
   const reset = () => {
-    setLoanAmount('');
-    setAnnualRate('');
-    setTenure('');
+    setLoanAmount("");
+    setAnnualRate("");
+    setTenure("");
     setResult(null);
-    setErrors({ loanAmount: '', annualRate: '', tenure: '' });
+    setErrors({ loanAmount: "", annualRate: "", tenure: "" });
   };
 
-  const isFormValid = loanAmount && annualRate && tenure &&
-    parseFloat(loanAmount) > 0 && parseFloat(annualRate) >= 0 && parseFloat(tenure) > 0;
+  const isFormValid =
+    loanAmount &&
+    annualRate &&
+    tenure &&
+    parseFloat(loanAmount) > 0 &&
+    parseFloat(annualRate) >= 0 &&
+    parseFloat(tenure) > 0;
 
   return (
     <ScrollView style={styles.container}>
@@ -118,10 +129,10 @@ const LoanEmiCalculator = () => {
         {/* Input Section */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <DollarSign size={20} color="#0066cc" />
+            {/* <DollarSign size={20} color="#0066cc" /> */}
             <Text style={styles.cardTitle}>Enter Loan Details</Text>
           </View>
-          
+
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Loan Amount (₹)</Text>
             <TextInput
@@ -172,14 +183,17 @@ const LoanEmiCalculator = () => {
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.calculateButton, !isFormValid && styles.disabledButton]}
+              style={[
+                styles.calculateButton,
+                !isFormValid && styles.disabledButton,
+              ]}
               onPress={calculate}
               disabled={!isFormValid}
             >
               <Calculator size={16} color="#ffffff" />
               <Text style={styles.calculateButtonText}>Calculate EMI</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.resetButton} onPress={reset}>
               <Text style={styles.resetButtonText}>Reset</Text>
             </TouchableOpacity>
@@ -213,8 +227,12 @@ const LoanEmiCalculator = () => {
                 </Text>
               </View>
               <View style={styles.detailsContainer}>
-                <Text style={styles.detailText}>Principal: {formatCurrency(parseFloat(loanAmount))}</Text>
-                <Text style={styles.detailText}>Interest Rate: {annualRate}% per annum</Text>
+                <Text style={styles.detailText}>
+                  Principal: {formatCurrency(parseFloat(loanAmount))}
+                </Text>
+                <Text style={styles.detailText}>
+                  Interest Rate: {annualRate}% per annum
+                </Text>
                 <Text style={styles.detailText}>Tenure: {tenure} months</Text>
               </View>
             </View>
@@ -222,13 +240,22 @@ const LoanEmiCalculator = () => {
             {/* Horizontal Bar Chart for Principal vs Interest */}
             <View style={styles.chartCard}>
               <Text style={styles.chartTitle}>Principal vs Interest</Text>
-              <View style={{ width: Math.min(screenWidth - 64, 320), alignItems: 'center', justifyContent: 'center' }}>
+              <View
+                style={{
+                  width: Math.min(screenWidth - 64, 320),
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <BarChart
                   data={{
-                    labels: ['Principal', 'Interest'],
+                    labels: ["Principal", "Interest"],
                     datasets: [
                       {
-                        data: [parseFloat(loanAmount) || 0, result ? result.totalInterest : 0],
+                        data: [
+                          parseFloat(loanAmount) || 0,
+                          result ? result.totalInterest : 0,
+                        ],
                       },
                     ],
                   }}
@@ -236,9 +263,9 @@ const LoanEmiCalculator = () => {
                   height={180}
                   yAxisLabel="₹"
                   chartConfig={{
-                    backgroundColor: '#ffffff',
-                    backgroundGradientFrom: '#f9fafb',
-                    backgroundGradientTo: '#f9fafb',
+                    backgroundColor: "#ffffff",
+                    backgroundGradientFrom: "#f9fafb",
+                    backgroundGradientTo: "#f9fafb",
                     decimalPlaces: 0,
                     color: (opacity = 1) => `rgba(0, 102, 204, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -259,84 +286,111 @@ const LoanEmiCalculator = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { alignItems: 'center', marginBottom: 32, marginTop: 20 },
-  titleContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
-  subtitle: { fontSize: 16, color: '#64748b', textAlign: 'center', maxWidth: 300 },
+  header: { alignItems: "center", marginBottom: 32, marginTop: 20 },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 8,
+  },
+  title: { fontSize: 24, fontWeight: "bold", color: "#1e293b" },
+  subtitle: {
+    fontSize: 16,
+    color: "#64748b",
+    textAlign: "center",
+    maxWidth: 300,
+  },
   content: { gap: 24, paddingHorizontal: 20 },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 24,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
-    marginBottom: 20
+    marginBottom: 20,
   },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, gap: 8 },
-  cardTitle: { fontSize: 18, fontWeight: '600', color: '#1e293b' },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 8,
+  },
+  cardTitle: { fontSize: 18, fontWeight: "600", color: "#1e293b" },
   inputContainer: { marginBottom: 16 },
-  labelContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 4 },
-  label: { fontSize: 14, fontWeight: '500', color: '#374151' },
+  labelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    gap: 4,
+  },
+  label: { fontSize: 14, fontWeight: "500", color: "#374151" },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#f9fafb",
   },
-  inputError: { borderColor: '#ef4444' },
-  errorText: { fontSize: 12, color: '#ef4444', marginTop: 4 },
-  buttonContainer: { flexDirection: 'row', gap: 12, marginTop: 8 },
+  inputError: { borderColor: "#ef4444" },
+  errorText: { fontSize: 12, color: "#ef4444", marginTop: 4 },
+  buttonContainer: { flexDirection: "row", gap: 12, marginTop: 8 },
   calculateButton: {
     flex: 1,
-    backgroundColor: '#0066cc',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#0066cc",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
   },
-  disabledButton: { backgroundColor: '#9ca3af' },
-  calculateButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  disabledButton: { backgroundColor: "#9ca3af" },
+  calculateButtonText: { color: "#ffffff", fontSize: 16, fontWeight: "600" },
   resetButton: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
-  resetButtonText: { color: '#374151', fontSize: 16, fontWeight: '500' },
+  resetButtonText: { color: "#374151", fontSize: 16, fontWeight: "500" },
   resultContainer: { gap: 16 },
-  resultItem: { backgroundColor: '#f3f4f6', borderRadius: 8, padding: 16 },
-  emiItem: { backgroundColor: '#dbeafe', borderWidth: 1, borderColor: '#93c5fd' },
-  interestItem: { backgroundColor: '#fef3c7', borderWidth: 1, borderColor: '#fcd34d' },
-  resultLabel: { fontSize: 14, color: '#64748b', marginBottom: 4 },
-  resultValue: { fontSize: 20, fontWeight: 'bold', color: '#1e293b' },
-  emiValue: { fontSize: 28, color: '#0066cc' },
-  interestValue: { color: '#d97706' },
+  resultItem: { backgroundColor: "#f3f4f6", borderRadius: 8, padding: 16 },
+  emiItem: {
+    backgroundColor: "#dbeafe",
+    borderWidth: 1,
+    borderColor: "#93c5fd",
+  },
+  interestItem: {
+    backgroundColor: "#fef3c7",
+    borderWidth: 1,
+    borderColor: "#fcd34d",
+  },
+  resultLabel: { fontSize: 14, color: "#64748b", marginBottom: 4 },
+  resultValue: { fontSize: 20, fontWeight: "bold", color: "#1e293b" },
+  emiValue: { fontSize: 28, color: "#0066cc" },
+  interestValue: { color: "#d97706" },
   detailsContainer: { gap: 4 },
-  detailText: { fontSize: 14, color: '#64748b' },
+  detailText: { fontSize: 14, color: "#64748b" },
   chartCard: {
     marginTop: 24,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
     borderRadius: 16,
     padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center",
   },
   chartTitle: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
     marginBottom: 8,
-    textAlign: 'center'
+    textAlign: "center",
   },
 });
 
 export default LoanEmiCalculator;
-

@@ -23,6 +23,7 @@ import { LinearGradient } from "expo-linear-gradient";
 // import { scenarios, Scenario } from '../data/scenarios';
 import { apiCall } from "../utils/api";
 import API from "../api/api";
+import Loader from "./Loader";
 
 const { width } = Dimensions.get("window");
 
@@ -38,16 +39,19 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
+  const [loading, setLoading] = useState<boolean>(false);
   console.log("Scenario", completedScenarios);
   useEffect(() => {
     const fetchScenarios = async () => {
       try {
+        setLoading(true);
         const response = await API.get(
           `/scenarios?category=${selectedCategory}&difficulty=${selectedDifficulty}`
         );
         const data = response.data;
 
         setScenarios(data.scenarios || data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching scenarios:", error);
       }
@@ -110,6 +114,21 @@ export const ScenarioList: React.FC<ScenarioListProps> = ({
         return Brain;
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignContent: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(250,250,250,0.9)",
+        }}
+      >
+        <Loader />
+      </SafeAreaView>
+    );
+  }
 
   const isCompleted = (scenarioId: string) =>
     completedScenarios.includes(scenarioId);

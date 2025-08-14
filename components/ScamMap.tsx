@@ -24,28 +24,27 @@ const ScamMap: React.FC = () => {
   const [timeRange, setTimeRange] = useState("all");
   const [selectedReport, setSelectedReport] = useState<any>(null);
 
-useEffect(() => {
-  const fetchReports = async () => {
-    try {
-      const res = await API.get("/reports");
-      const data = res.data;
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const res = await API.get("/reports");
+        const data = res.data;
+        console.log("Fetched reports:", data);
 
-      if (Array.isArray(data)) {
-        data.forEach((report: any) => addReport(report));
-      } else {
-        console.warn("Fetched reports is not an array");
+        if (Array.isArray(data)) {
+          data.forEach((report: any) => addReport(report));
+        } else {
+          console.warn("Fetched reports is not an array");
+        }
+      } catch (error) {
+        console.error("Error fetching reports", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching reports", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchReports();
-}, []);
-
-
+    fetchReports();
+  }, []);
 
   const filteredReports = useMemo(() => {
     const safeReports = Array.isArray(reports) ? reports : [];
@@ -84,7 +83,9 @@ useEffect(() => {
       case "romance":
         return <Ionicons name="heart" size={28} color="pink" />;
       case "tax-fraud":
-        return <FontAwesome5 name="file-invoice-dollar" size={26} color="purple" />;
+        return (
+          <FontAwesome5 name="file-invoice-dollar" size={26} color="purple" />
+        );
       case "student-loan":
         return <Ionicons name="school" size={28} color="green" />;
       default:

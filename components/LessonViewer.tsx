@@ -44,19 +44,29 @@ const colors = {
   },
 };
 
-interface LessonViewerProps {
-  lesson: any;
-  onBack: () => void;
-  onComplete: () => void;
-  isCompleted?: boolean;
-}
+// interface LessonViewerProps {
+//   lesson: any;
+//   onBack: () => void;
+//   onComplete: () => void;
+//   isCompleted?: boolean;
+// }
 
-export const LessonViewer: React.FC<LessonViewerProps> = ({
+export const LessonViewer = ({
   lesson,
   onBack,
   onComplete,
-  isCompleted,
+
+  totalLessons,
+  currentLessonIndex,
 }) => {
+  console.log(
+    "Rendering LessonViewer with lesson:",
+    totalLessons,
+    currentLessonIndex
+  );
+
+  const [currentLessonInd, setCurrentLessonInd] =
+    React.useState(currentLessonIndex);
   const markdownStyles = {
     body: {
       fontSize: 16,
@@ -164,12 +174,12 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             </View>
           </View>
 
-          {isCompleted && (
-            <View style={styles.completedBadge}>
-              <CheckCircle size={16} color={colors.white} />
-              <Text style={styles.completedBadgeText}>Completed</Text>
-            </View>
-          )}
+          {/* {isCompleted && ( */}
+          <View style={styles.completedBadge}>
+            <CheckCircle size={16} color={colors.white} />
+            <Text style={styles.completedBadgeText}>Completed</Text>
+          </View>
+          {/* )} */}
         </View>
 
         {/* Progress Indicator */}
@@ -182,7 +192,9 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             <View
               style={[
                 styles.progressFill,
-                { width: isCompleted ? "100%" : "0%" },
+                {
+                  width: `${(currentLessonInd / totalLessons) * 100}%`,
+                },
               ]}
             />
           </View>
@@ -245,27 +257,28 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
 
         {/* Action Button */}
         <View style={styles.actionContainer}>
-          {!isCompleted && (
-            <Text style={styles.actionHint}>
-              Click complete to move forward.
-            </Text>
-          )}
+          {/* {!isCompleted && ( */}
+          <Text style={styles.actionHint}>Click complete to move forward.</Text>
+          {/* )} */}
           <TouchableOpacity
-            style={[styles.actionButton, isCompleted && styles.completedButton]}
-            onPress={onComplete}
-            disabled={isCompleted}
+            style={[styles.actionButton, styles.completedButton]}
+            onPress={() => {
+              onComplete();
+              setCurrentLessonInd(currentLessonInd + 1);
+            }}
+            // disabled={isCompleted}
           >
-            {isCompleted ? (
+            {/* {isCompleted ? (
               <>
                 <CheckCircle size={20} color={colors.white} />
                 <Text style={styles.actionButtonText}>Lesson Completed</Text>
               </>
-            ) : (
-              <>
-                <Target size={20} color={colors.white} />
-                <Text style={styles.actionButtonText}>Mark as Complete</Text>
-              </>
-            )}
+            ) : ( */}
+            <>
+              <Target size={20} color={colors.white} />
+              <Text style={styles.actionButtonText}>Mark as Complete</Text>
+            </>
+            {/* )} */}
           </TouchableOpacity>
         </View>
       </View>

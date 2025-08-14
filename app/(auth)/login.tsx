@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Image, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
 import LoginForm from "../../components/LoginForm";
 import { useAuth } from "../../contexts/AuthContext";
 import { router } from "expo-router";
+
+const { width } = Dimensions.get("window");
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -12,7 +13,6 @@ export default function LoginScreen() {
 
   const handleLoginSuccess = () => {
     signIn();
-    // Navigation will be handled by AuthProvider
   };
 
   const switchToSignup = () => {
@@ -25,12 +25,17 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="shield-checkmark" size={40} color="#151717" />
-        <Text style={styles.appTitle}>FinEduGuard</Text>
+        <Image
+          source={{
+            uri: "https://cdn.jsdelivr.net/gh/Nishant-Manocha/FineduGuard_StaticFiles@main/FinEduGuardWhiteLogo.png",
+          }}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <Text style={styles.appSubtitle}>Secure Financial Education</Text>
       </View>
 
@@ -49,38 +54,33 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9fcfb",
+    backgroundColor: "#1b8a5a", // Rich green background restored
   },
   header: {
     alignItems: "center",
-    paddingTop: 60,
+    paddingTop: 35,
     paddingBottom: 30,
-    backgroundColor: "#1b8a5a",
-    borderBottomWidth: 4,
-    borderBottomColor: "#c0392b", // Red accent at bottom
   },
-  appTitle: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#ffffff",
-    marginTop: 10,
+  logo: {
+    width: width * 0.8,
+    height: width * 0.5,
   },
   appSubtitle: {
     fontSize: 16,
-    color: "#d4a64f",
-    marginTop: 5,
+    color: "#f1d28f", // Gold tone for elegance
+    fontWeight: "500",
   },
   formContainer: {
     flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
     paddingHorizontal: 20,
-    paddingTop: 20,
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    paddingTop: 25,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: -2 },
-    shadowRadius: 10,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 5,
   },
 });

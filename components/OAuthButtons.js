@@ -1,71 +1,95 @@
 // OAuthButtons.js
-import React, { useEffect } from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ToastAndroid,
+} from "react-native";
+import { signInWithGoogle } from "../utils/firebaseAuth"; // our auth helper
 import { Ionicons } from "@expo/vector-icons";
-import * as Google from "expo-auth-session/providers/google";
-import { useDispatch } from "react-redux";
-import { signUp, login } from "../redux/services/operations/authServices";
 
-export default function OAuthButtons() {
-  const dispatch = useDispatch();
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: "YOUR_EXPO_CLIENT_ID",
-    iosClientId: "YOUR_IOS_CLIENT_ID",
-    androidClientId: "YOUR_ANDROID_CLIENT_ID",
-    webClientId: "YOUR_WEB_CLIENT_ID",
-  });
+const OAuthButtons = () => {
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
-      fetch("https://www.googleapis.com/userinfo/v2/me", {
-        headers: { Authorization: `Bearer ${authentication.accessToken}` },
-      })
-        .then((res) => res.json())
-        .then((user) => {
-          // Send user info to backend for login/signup
-          dispatch(login(user.email, user.id)); // Or dispatch(signUp(...))
-        });
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      const user = await signInWithGoogle();
+
+      console.log("Google User Info:", user);
+
+      // Send user info to backend
+      // const response = await fetch(
+      //   "https://yourapi.com/api/auth/google-login",
+      //   {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(user),
+      //   }
+      // );
+      // const data = await response.json();
+
+      ToastAndroid.show("Google Login Successful!", ToastAndroid.SHORT);
+      console.log("Backend response:", data);
+    } catch (error) {
+      console.error("Google OAuth Error:", error);
+      ToastAndroid.show("Google Login Failed", ToastAndroid.SHORT);
+    } finally {
+      setLoading(false);
     }
-  }, [response]);
+  };
 
   return (
-    <View style={styles.row}>
-      <TouchableOpacity style={styles.socialButton} onPress={() => promptAsync()}>
-        <Ionicons name="logo-google" size={20} color="#DB4437" />
-        <Text style={styles.text}>Continue with Google</Text>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.googleButton}
+        onPress={handleGoogleLogin}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <>
+            <Ionicons
+              name="logo-google"
+              size={24}
+              color="#fff"
+              style={{ marginRight: 10 }}
+            />
+            <Text style={styles.buttonText}>Continue with Google</Text>
+          </>
+        )}
       </TouchableOpacity>
-      {/* Facebook button logic will be similar */}
-      <TouchableOpacity style={styles.socialButton}>
-        <Ionicons name="logo-facebook" size={20} color="#4267B2" />
-        <Text style={styles.text}>Continue with Facebook</Text>
-      </TouchableOpacity>
+      {/* You can add more OAuth buttons below */}
     </View>
   );
-}
+};
+
+export default OAuthButtons;
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
+  container: {
+    flexDirection: "column",
     justifyContent: "center",
-    borderColor: "#ededef",
-    borderWidth: 1,
-    borderRadius: 10,
-    height: 50,
-    flex: 1,
-    marginHorizontal: 5,
-    backgroundColor: "#fff",
+    alignItems: "center",
   },
-  text: {
-    marginLeft: 8,
-    fontWeight: "500",
-    color: "#151717",
+  googleButton: {
+    flexDirection: "row",
+    backgroundColor: "#4285F4",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: "center",
+    marginVertical: 5,
+    width: "100%",
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

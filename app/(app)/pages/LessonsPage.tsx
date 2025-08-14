@@ -25,6 +25,7 @@ import { LessonViewer } from "../../../components/LessonViewer";
 // import { Course, Lesson, Progress } from "../../../types/lesson";
 import { router } from "expo-router";
 import API from "../../../api/api";
+import Loader from "../../../components/Loader";
 
 const { width } = Dimensions.get("window");
 const fetchCourses = async () => {
@@ -69,11 +70,14 @@ export default function LessonsPage() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [progress, setProgress] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function courses() {
+      setLoading(true);
       const courses = await fetchCourses();
       setCourses(courses);
+      setLoading(false);
     }
     courses();
   }, []);
@@ -95,49 +99,52 @@ export default function LessonsPage() {
     }
   };
 
-  const getProgressForCourse = (courseId: string) => {
-    const courseProgress = progress.find((p) => p.courseId === courseId);
-    if (!courseProgress) return 0;
-    const course = courses.find((c) => c._id === courseId);
-    if (!course) return 0;
+  // const getProgressForCourse = (courseId: string) => {
+  //   const courseProgress = progress.find((p) => p.courseId === courseId);
+  //   if (!courseProgress) return 0;
+  //   const course = courses.find((c) => c._id === courseId);
+  //   if (!course) return 0;
+  //   return (
+  //     (courseProgress.completedLessons.length / course.lessons.length) * 100
+  //   );
+  // };
+
+  if (loading) {
     return (
-      (courseProgress.completedLessons.length / course.lessons.length) * 100
+      <SafeAreaView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <Loader />
+      </SafeAreaView>
     );
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.audioLessonsContainer}>
-          <Text style={styles.audioLessonsTitle}>
-            Also Try our Audio Lessons
-          </Text>
-          <TouchableOpacity
-            style={styles.audioLessonsButton}
-            onPress={() => router.push("/pages/AudioLessons")}
-          >
-            <Text style={styles.audioLessonsButtonText}>Listen Now</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.audioLessonsContainer}>
+        <Text style={styles.audioLessonsTitle}>Also Try our Audio Lessons</Text>
+        <TouchableOpacity
+          style={styles.audioLessonsButton}
+          onPress={() => router.push("/pages/AudioLessons")}
+        >
+          <Text style={styles.audioLessonsButtonText}>Listen Now</Text>
+        </TouchableOpacity>
+      </View>
 
-        {/* Courses Section */}
-        <View style={styles.coursesSection}>
-          <View style={styles.coursesGrid}>
-            {courses.map((course) => (
-              <CourseCard
-                key={course._id}
-                course={course}
-                progress={getProgressForCourse(course._id)}
-                onStartCourse={() => handleStartCourse(course._id)}
-              />
-            ))}
-          </View>
+      {/* Courses Section */}
+      <View style={styles.coursesSection}>
+        <View style={styles.coursesGrid}>
+          {courses.map((course) => (
+            <CourseCard
+              key={course._id}
+              course={course}
+              // progress={getProgressForCourse(course._id)}
+              onStartCourse={() => handleStartCourse(course._id)}
+            />
+          ))}
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

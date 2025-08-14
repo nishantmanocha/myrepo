@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,19 +6,25 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-} from 'react-native';
-import { Calculator, CreditCard, TrendingUp, Sparkles, Repeat } from 'lucide-react-native';
-import SimpleInterestCalculator from './SimpleInterestCalculator';
-import LoanEmiCalculator from './LoanEmiCalculator';
-import CompoundInterestCalculator from './CompoundInterestCalculator';
+} from "react-native";
+import {
+  Calculator,
+  CreditCard,
+  TrendingUp,
+  Sparkles,
+  Repeat,
+} from "lucide-react-native";
+import SimpleInterestCalculator from "./SimpleInterestCalculator";
+import LoanEmiCalculator from "./LoanEmiCalculator";
+import CompoundInterestCalculator from "./CompoundInterestCalculator";
 
 const CalculatorApp = () => {
-  const [activeTab, setActiveTab] = useState('simple');
+  const [activeTab, setActiveTab] = useState("simple");
 
   const tabs = [
-    { id: 'simple', label: 'Simple Interest', icon: TrendingUp },
-    { id: 'emi', label: 'Loan EMI', icon: CreditCard },
-    { id: 'compound', label: 'Compound Interest', icon: Repeat },
+    { id: "simple", label: "Simple Interest", icon: TrendingUp },
+    { id: "emi", label: "Loan EMI", icon: CreditCard },
+    { id: "compound", label: "Compound Interest", icon: Repeat },
   ];
 
   return (
@@ -27,15 +33,16 @@ const CalculatorApp = () => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
+            <View style={styles.iconContainer}>
+              <Calculator size={32} color="#ffffff" />
+            </View>
             <View style={styles.titleContainer}>
-              <View style={styles.iconContainer}>
-                <Calculator size={32} color="#ffffff" />
-              </View>
               <Text style={styles.title}>Financial Calculator</Text>
               <Sparkles size={24} color="#ffffff" opacity={0.8} />
             </View>
             <Text style={styles.subtitle}>
-              Calculate Simple Interest, Loan EMI & Compound Interest with beautiful visualizations
+              Calculate Simple Interest, Loan EMI & Compound Interest with
+              beautiful visualizations
             </Text>
           </View>
         </View>
@@ -49,10 +56,16 @@ const CalculatorApp = () => {
                 return (
                   <TouchableOpacity
                     key={tab.id}
-                    style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+                    style={[
+                      styles.tab,
+                      activeTab === tab.id && styles.activeTab,
+                    ]}
                     onPress={() => setActiveTab(tab.id)}
                   >
-                    <Icon size={20} color={activeTab === tab.id ? '#ffffff' : '#666666'} />
+                    <Icon
+                      size={20}
+                      color={activeTab === tab.id ? "#ffffff" : "#666666"}
+                    />
                     <Text
                       style={[
                         styles.tabText,
@@ -70,21 +83,19 @@ const CalculatorApp = () => {
 
         {/* Calculator Content */}
         <View style={styles.content}>
-          {activeTab === 'simple' && <SimpleInterestCalculator />}
-          {activeTab === 'emi' && <LoanEmiCalculator />}
-          {activeTab === 'compound' && <CompoundInterestCalculator />}
+          {activeTab === "simple" && <SimpleInterestCalculator />}
+          {activeTab === "emi" && <LoanEmiCalculator />}
+          {activeTab === "compound" && <CompoundInterestCalculator />}
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        {/* <View style={styles.footer}>
           <View style={styles.footerContent}>
             <Calculator size={20} color="#3b82f6" />
             <Text style={styles.footerTitle}>Financial Calculator</Text>
           </View>
-          <Text style={styles.footerSubtitle}>
-            Built with PayPal-inspired design • Calculate with confidence
-          </Text>
-        </View>
+          <Text style={styles.footerSubtitle}>•Calculate with confidence</Text>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -93,68 +104,70 @@ const CalculatorApp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: "#f8fafc",
   },
   scrollView: {
     flex: 1,
   },
   header: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: "#3b82f6",
     paddingVertical: 32,
     paddingHorizontal: 16,
   },
   headerContent: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
     gap: 12,
   },
   iconContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     padding: 12,
     borderRadius: 50,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontWeight: "bold",
+    color: "#ffffff",
   },
   subtitle: {
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.8)',
-    textAlign: 'center',
+    color: "rgba(255, 255, 255, 0.8)",
+    textAlign: "center",
     maxWidth: 320,
   },
   tabContainer: {
     paddingVertical: 32,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
   },
   tabWrapper: {
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    flexDirection: "row",
+    backgroundColor: "#ffffff",
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    // padding: 8,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 8,
+    // elevation: 4,
   },
   tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 24,
     gap: 12,
-    marginHorizontal: 4,
+    // marginHorizontal: 4,
   },
   activeTab: {
-    backgroundColor: '#3b82f6',
-    shadowColor: '#000',
+    backgroundColor: "#3b82f6",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -162,39 +175,39 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#666666',
+    fontWeight: "500",
+    color: "#666666",
   },
   activeTabText: {
-    color: '#ffffff',
+    color: "#ffffff",
   },
   content: {
     paddingHorizontal: 16,
   },
   footer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: "#e2e8f0",
     paddingVertical: 32,
     paddingHorizontal: 16,
     marginTop: 64,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
     gap: 8,
   },
   footerTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontWeight: "600",
+    color: "#1e293b",
   },
   footerSubtitle: {
     fontSize: 14,
-    color: '#64748b',
-    textAlign: 'center',
+    color: "#64748b",
+    textAlign: "center",
   },
 });
 

@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/services/operations/authServices";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import OAuthButtons from "./OAuthButtons";
 import SecureTextInput from "./SecureTextInput";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import auth from "@react-native-firebase/auth";
 
-const LoginForm = ({ onSwitchToSignup, onForgotPassword }) => {
+const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -28,6 +25,39 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword }) => {
       });
     }
   }, [token]);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        "391480015245-sf3lrttpogl3005p3j9g2vpt0aet2b5o.apps.googleusercontent.com",
+      offlineAccess: true, // <- important
+      forceCodeForRefreshToken: true, // <- ensures refresh token on first login
+    });
+  }, []);
+
+  async function onGoogleButtonPress() {
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      const { idToken } = await GoogleSignin.signIn();
+
+      if (!idToken) {
+        console.error("Google Sign-In returned null ID token");
+        return;
+      }
+
+      console.log("Google ID Token:", idToken);
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const userCredential =
+        await auth().signInWithCredential(googleCredential);
+
+      console.log("User signed in:", userCredential.user);
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+    }
+  }
 
   const handleLogin = async () => {
     if (!email) {
@@ -124,9 +154,7 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword }) => {
             style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
             onPress={() => setRememberMe(!rememberMe)}
           >
-            {rememberMe && (
-              <Ionicons name="checkmark" size={16} color="#fff" />
-            )}
+            {rememberMe && <Ionicons name="checkmark" size={16} color="#fff" />}
           </TouchableOpacity>
           <Text style={styles.checkboxLabel}>Remember me</Text>
         </View>
@@ -155,7 +183,8 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword }) => {
       </Text>
 
       <Text style={styles.orText}>Or With</Text>
-      <OAuthButtons />
+      {/* <OAuthButtons /> */}
+      <Button onPress={onGoogleButtonPress} title="Google Sign In" />
     </View>
   );
 };

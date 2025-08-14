@@ -98,7 +98,7 @@ export default function DocumentsScreen() {
         <View style={styles.quickUploadBox}>
           <Text style={styles.quickUploadTitle}>🚀 Quick Upload Option</Text>
           <Text style={styles.quickUploadText}>
-            Send all documents via WhatsApp to +91 98765 43210 for instant
+            Send all documents via WhatsApp to +91 98765 xxxxx for instant
             processing!
           </Text>
           <TouchableOpacity style={styles.whatsappButton}>

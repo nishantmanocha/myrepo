@@ -45,12 +45,14 @@ const SearchBox = ({ onLocationSelect, onSearchComplete }) => {
 
   // Handle user selecting a suggestion
   const handleSelect = async (placeId, description) => {
+    console.log("Selected place ID:", placeId);
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://maps.gomaps.pro/maps/api/place/details/json?place_id=${placeId}&key=${GOMAPS_API_KEY}`
+        `https://maps.gomaps.pro/maps/api/place/details/json?place_id=${placeId}&key=${process.env.GOOGLE_MAPS_KEY}`
       );
       const data = await response.json();
+      console.log("Place details:", data);
 
       if (data.status === "OK") {
         const location = data.result.geometry.location;
@@ -62,6 +64,7 @@ const SearchBox = ({ onLocationSelect, onSearchComplete }) => {
         Alert.alert("Error", "Failed to fetch place details.");
       }
     } catch (error) {
+      console.error("Failed to fetch place details:", error);
       Alert.alert("Error", "Failed to fetch place details.");
     } finally {
       setIsLoading(false);

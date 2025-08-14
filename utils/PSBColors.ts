@@ -7,7 +7,7 @@ export const PSBColors = {
     darkGreen: "#004025", // Darker shade for emphasis
     lightGreen: "#E8F5E8", // Light green for backgrounds
   },
-  
+
   // Secondary Colors
   secondary: {
     navy: "#1E3A8A", // Deep navy for professional look
@@ -15,7 +15,7 @@ export const PSBColors = {
     gray: "#6B7280", // Neutral gray
     lightGray: "#F3F4F6", // Light gray for backgrounds
   },
-  
+
   // Status Colors
   status: {
     success: "#10B981", // Green for success
@@ -23,7 +23,7 @@ export const PSBColors = {
     error: "#EF4444", // Red for errors
     info: "#3B82F6", // Blue for information
   },
-  
+
   // Background Colors
   background: {
     primary: "#FFFFFF", // Main background
@@ -32,7 +32,7 @@ export const PSBColors = {
     card: "#FFFFFF", // Card background
     surface: "rgba(0, 86, 63, 0.05)", // Surface with PSB green tint
   },
-  
+
   // Text Colors
   text: {
     primary: "#1F2937", // Main text
@@ -41,21 +41,21 @@ export const PSBColors = {
     inverse: "#FFFFFF", // Text on dark backgrounds
     accent: "#00563F", // PSB green text
   },
-  
+
   // Border Colors
   border: {
     primary: "#E5E7EB", // Main border
     secondary: "#D1D5DB", // Secondary border
     accent: "#00563F", // PSB green border
   },
-  
+
   // Shadow Colors
   shadow: {
     primary: "rgba(0, 0, 0, 0.1)", // Main shadow
     secondary: "rgba(0, 0, 0, 0.05)", // Light shadow
     accent: "rgba(0, 86, 63, 0.1)", // PSB green shadow
   },
-  
+
   // Gradient Colors
   gradient: {
     primary: ["#00563F", "#004025"], // PSB green gradient
@@ -63,7 +63,7 @@ export const PSBColors = {
     success: ["#10B981", "#059669"], // Success gradient
     modern: ["#3B82F6", "#1E40AF"], // Modern blue gradient
   },
-  
+
   // Interactive Colors
   interactive: {
     button: {
@@ -77,7 +77,7 @@ export const PSBColors = {
       background: "#FFFFFF", // Tab background
     },
   },
-  
+
   // Special Effects
   effects: {
     glow: "rgba(0, 86, 63, 0.2)", // PSB green glow
@@ -91,7 +91,10 @@ export const PSBTheme = {
   light: {
     isDark: false,
     colors: {
-      background: [PSBColors.background.primary, PSBColors.background.secondary],
+      background: [
+        PSBColors.background.primary,
+        PSBColors.background.secondary,
+      ],
       surface: PSBColors.background.surface,
       card: PSBColors.background.card,
       text: PSBColors.text.primary,

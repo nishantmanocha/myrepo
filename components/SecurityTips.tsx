@@ -4,11 +4,11 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface SecurityTipsProps {
   onRestart: () => void;
@@ -22,7 +22,7 @@ const SecurityTips = ({ onRestart }: SecurityTipsProps) => {
       description:
         "Always verify the website URL. Banks use specific domains like sbi.co.in, not variations like secure-sbi-alert.in",
       example:
-        "✅ https://onlinesbi.sbi.co.in vs ❌ https://secure-sbi-alert.in",
+        "✅ https://onlineabc.abc.co.in vs ❌ https://secure-abc-alert.in",
     },
     {
       icon: "call-outline",

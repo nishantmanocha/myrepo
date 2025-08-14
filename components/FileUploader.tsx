@@ -1,7 +1,22 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Platform,
+} from "react-native";
 import { Upload, FileText, AlertCircle } from "lucide-react-native";
 import * as DocumentPicker from "expo-document-picker";
+import {
+  check,
+  openSettings,
+  PERMISSIONS,
+  request,
+  RESULTS,
+  Permission,
+} from "react-native-permissions";
 
 interface FileInfo {
   uri: string;
@@ -15,10 +30,10 @@ interface FileUploaderProps {
   isProcessing: boolean;
 }
 
-export const FileUploader = ({
+export const FileUploader: React.FC<FileUploaderProps> = ({
   onFileSelect,
   isProcessing,
-}: FileUploaderProps) => {
+}) => {
   const [error, setError] = useState<string | null>(null);
 
   const validateFile = (
@@ -46,7 +61,51 @@ export const FileUploader = ({
     return null;
   };
 
+  const requestPermissions = async (): Promise<boolean> => {
+    let permissionsToCheck: Permission[];
+
+    if (Platform.OS === "android") {
+      if (Platform.Version >= 33) {
+        permissionsToCheck = [
+          PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
+          PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+          PERMISSIONS.ANDROID.READ_MEDIA_AUDIO,
+        ];
+      } else {
+        permissionsToCheck = [PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE];
+      }
+    } else {
+      permissionsToCheck = [PERMISSIONS.IOS.PHOTO_LIBRARY];
+    }
+
+    for (const permission of permissionsToCheck) {
+      const status = await check(permission);
+
+      if (status === RESULTS.DENIED) {
+        const reqStatus = await request(permission);
+        if (reqStatus !== RESULTS.GRANTED) {
+          return false;
+        }
+      } else if (status === RESULTS.BLOCKED) {
+        Alert.alert(
+          "Permission Required",
+          "Please enable the required permission in your device settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: openSettings },
+          ]
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleFileSelect = async () => {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: [
@@ -61,7 +120,7 @@ export const FileUploader = ({
         copyToCacheDirectory: true,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets && result.assets[0]) {
         const file = result.assets[0];
         const validationError = validateFile(file);
 

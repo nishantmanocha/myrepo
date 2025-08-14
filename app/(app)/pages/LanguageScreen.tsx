@@ -14,7 +14,7 @@ import { Shield, ChevronDown, Globe } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { languages } from "../../../data/lessonsData";
 import API from "../../../api/api";
-
+import Loader from "../../../components/Loader";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -23,20 +23,22 @@ const LanguageScreen: React.FC = ({ navigation }: any) => {
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [currentLessons, setCurrentLessons] = useState<any[]>([]);
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const res = await API.get("/lessons", {
           params: { language: selectedLanguage },
         });
         setCurrentLessons(res.data?.lessons || []);
+        setLoading(false);
       } catch (error) {
         console.error("Error loading lessons:", error);
       }
     })();
   }, [selectedLanguage]);
-
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -51,19 +53,35 @@ const LanguageScreen: React.FC = ({ navigation }: any) => {
   };
 
   const selectedLang = languages.find((lang) => lang.code === selectedLanguage);
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, alignContent: "center", justifyContent: "center" }}
+      >
+        <Loader />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <LinearGradient colors={["#f0f9ff", "#e0f2fe"]} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Header */}
           <View style={styles.header}>
-            <LinearGradient colors={["#3b82f6", "#1d4ed8"]} style={styles.logoGradient}>
+            <LinearGradient
+              colors={["#3b82f6", "#1d4ed8"]}
+              style={styles.logoGradient}
+            >
               <Shield size={32} color="white" />
             </LinearGradient>
             <Text style={styles.appTitle}>SurakshaCall</Text>
             <Text style={styles.appSubtitle}>
-              Learn to protect yourself from fraud with voice-based lessons and quizzes
+              Learn to protect yourself from fraud with voice-based lessons and
+              quizzes
             </Text>
           </View>
 
@@ -89,7 +107,10 @@ const LanguageScreen: React.FC = ({ navigation }: any) => {
                 <ChevronDown
                   size={20}
                   color="#6b7280"
-                  style={[styles.chevron, showLanguageDropdown && styles.chevronRotated]}
+                  style={[
+                    styles.chevron,
+                    showLanguageDropdown && styles.chevronRotated,
+                  ]}
                 />
               </TouchableOpacity>
 
@@ -100,7 +121,8 @@ const LanguageScreen: React.FC = ({ navigation }: any) => {
                       key={lang.code}
                       style={[
                         styles.dropdownItem,
-                        selectedLanguage === lang.code && styles.dropdownItemSelected,
+                        selectedLanguage === lang.code &&
+                          styles.dropdownItemSelected,
                       ]}
                       onPress={() => {
                         setSelectedLanguage(lang.code);
@@ -121,11 +143,14 @@ const LanguageScreen: React.FC = ({ navigation }: any) => {
             <View style={styles.lessonsSectionHeader}>
               <Text style={styles.lessonsTitle}>Available Lessons</Text>
               <Text style={styles.lessonsCount}>
-                {currentLessons.length} lesson{currentLessons.length !== 1 ? "s" : ""}
+                {currentLessons.length} lesson
+                {currentLessons.length !== 1 ? "s" : ""}
               </Text>
             </View>
 
-            <Animated.View style={[styles.lessonsContainer, { opacity: fadeAnim }]}>
+            <Animated.View
+              style={[styles.lessonsContainer, { opacity: fadeAnim }]}
+            >
               {currentLessons.map((lesson, index) => (
                 <TouchableOpacity
                   key={lesson.id}
@@ -142,7 +167,9 @@ const LanguageScreen: React.FC = ({ navigation }: any) => {
                   </View>
                   <View style={styles.lessonContent}>
                     <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                    <Text style={styles.lessonDescription}>{lesson.description}</Text>
+                    <Text style={styles.lessonDescription}>
+                      {lesson.description}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -199,7 +226,11 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   cardGradient: { padding: 24 },
-  languageHeader: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
+  languageHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   languageTitle: {
     fontSize: 18,
     fontWeight: "600",

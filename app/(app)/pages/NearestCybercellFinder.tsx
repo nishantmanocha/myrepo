@@ -20,12 +20,14 @@ export default function App() {
 
   // ✅ Fetch cyber cells from backend
   const fetchCyberCells = async (lat: number, lng: number) => {
+    console.log("Fetching cyber cells for:", lat, lng);
     try {
       const res = await API.get("/nearby-cybercells", {
         params: { lat, lng, radius: 10000 },
       });
 
       const data = res.data || [];
+      // console.log("✅ Fetched cyber cells:", res);
 
       const updatedCells = data.map((cell: any) => ({
         ...cell,
@@ -34,7 +36,7 @@ export default function App() {
 
       setNearbyCells(updatedCells);
     } catch (error: any) {
-      console.error("❌ Failed to fetch cyber cells:", error?.message || error);
+      // console.error("❌ Failed to fetch cyber cells:", error || error);
     }
   };
 
