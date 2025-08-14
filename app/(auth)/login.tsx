@@ -28,7 +28,7 @@ export default function LoginScreen() {
       <StatusBar style="light" />
 
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Image
           source={{
             uri: "https://cdn.jsdelivr.net/gh/Nishant-Manocha/FineduGuard_StaticFiles@main/FinEduGuardWhiteLogo.png",
@@ -37,7 +37,7 @@ export default function LoginScreen() {
           resizeMode="contain"
         />
         <Text style={styles.appSubtitle}>Secure Financial Education</Text>
-      </View>
+      </View> */}
 
       {/* Form Container */}
       <View style={styles.formContainer}>
@@ -54,7 +54,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1b8a5a", // Rich green background restored
+    // backgroundColor: "#1b8a5a", // Rich green background restored
   },
   header: {
     alignItems: "center",
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     paddingTop: 25,
     shadowColor: "#000",
     shadowOpacity: 0.1,

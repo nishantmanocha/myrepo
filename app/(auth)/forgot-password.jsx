@@ -14,16 +14,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import SecureTextInput from "../../components/SecureTextInput";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const ForgotPassword = ({ onBackToLogin }) => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.auth?.loading);
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleSendOtp = async () => {
     if (!email)
@@ -84,10 +85,10 @@ const ForgotPassword = ({ onBackToLogin }) => {
   };
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={onBackToLogin}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={22} color="#fff" />
         </TouchableOpacity>
         <Image
@@ -158,21 +159,19 @@ const ForgotPassword = ({ onBackToLogin }) => {
           )}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
-const { width: screenWidth } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#eafaf1",
+    // backgroundColor: "#eafaf1",
   },
   header: {
     backgroundColor: "#1b8a5a",
-    paddingTop: 50,
-    paddingBottom: 20,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
   backBtn: {
     position: "absolute",
     left: 20,
-    top: 50,
+    top: 20,
     backgroundColor: "rgba(255,255,255,0.2)",
     borderRadius: 25,
     width: 40,
@@ -189,8 +188,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerLogo: {
-    width: screenWidth * 0.8, // ✅ 60% of screen width
-    height: screenWidth * 0.5, // ✅ maintains aspect ratio 3:1
+    width: screenWidth * 0.6, // ✅ 60% of screen width
+    height: screenWidth * 0.4, // ✅ maintains aspect ratio 3:1
     resizeMode: "contain",
   },
   container: {
