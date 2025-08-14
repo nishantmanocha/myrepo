@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "391480015245-sf3lrttpogl3005p3j9g2vpt0aet2b5o.apps.googleusercontent.com",
+          "client_id": "391480015245-jo3436i1p3kddefpkkscgmti68pegjqr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.pankaj465.FinGuard",
-            "certificate_hash": "ddb7b2b87831711e95a5f3f69b025b2ea3bb2681"
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {

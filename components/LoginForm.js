@@ -6,8 +6,13 @@ import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import OAuthButtons from "./OAuthButtons";
 import SecureTextInput from "./SecureTextInput";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
 import auth from "@react-native-firebase/auth";
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
+import { router } from "expo-router";
 
 const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -17,6 +22,7 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.auth?.loading);
   const token = useSelector((state) => state.auth?.token);
+  const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -29,33 +35,51 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        "391480015245-sf3lrttpogl3005p3j9g2vpt0aet2b5o.apps.googleusercontent.com",
+        "391480015245-9fj3s3l8hg7vus5ifadhqiff58ka4t5m.apps.googleusercontent.com",
       offlineAccess: true, // <- important
-      forceCodeForRefreshToken: true, // <- ensures refresh token on first login
+      scopes: ["profile", "email"],
     });
   }, []);
 
   async function onGoogleButtonPress() {
+    if (isGoogleSigningIn) return;
+    setIsGoogleSigningIn(true);
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
-      const { idToken } = await GoogleSignin.signIn();
+      await GoogleSignin.signOut();
 
+      const signInResult = await GoogleSignin.signIn();
+
+      let idToken = signInResult?.idToken;
+      console.log("Google Sign-In Result:", idToken);
+      if (!idToken) {
+        const tokens = await GoogleSignin.getTokens();
+        idToken = tokens?.idToken;
+      }
       if (!idToken) {
         console.error("Google Sign-In returned null ID token");
         return;
       }
 
-      console.log("Google ID Token:", idToken);
-
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const userCredential =
         await auth().signInWithCredential(googleCredential);
-
       console.log("User signed in:", userCredential.user);
+
+      router.replace("/(app)/(tabs)");
+      console.log("User signed in with Google:", userCredential.user);
     } catch (error) {
-      console.error("Google Sign-In Error:", error);
+      if (error?.code === statusCodes.IN_PROGRESS) {
+        console.warn("Google Sign-In already in progress");
+      } else if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.warn("Google Sign-In cancelled by user");
+      } else {
+        console.error("Google Sign-In Error:", error);
+      }
+    } finally {
+      setIsGoogleSigningIn(false);
     }
   }
 
@@ -184,7 +208,11 @@ const LoginForm = ({ onSwitchToSignup, onForgotPassword, onLoginSuccess }) => {
 
       <Text style={styles.orText}>Or With</Text>
       {/* <OAuthButtons /> */}
-      <Button onPress={onGoogleButtonPress} title="Google Sign In" />
+      <Button
+        onPress={onGoogleButtonPress}
+        title={isGoogleSigningIn ? "Signing in..." : "Google Sign In"}
+        disabled={isGoogleSigningIn}
+      />
     </View>
   );
 };
