@@ -30,6 +30,7 @@ export default function AppLayout() {
   // Render the protected app
   return (
     <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
       <Stack.Screen name="(tabs)" />
       {/* <Stack.Screen name="pages" /> */}
     </Stack>

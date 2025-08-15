@@ -14,7 +14,7 @@ export default function TabLayout() {
           borderTopColor: theme.colors.border,
           height: 70,
           paddingBottom: 10,
-          paddingTop: 10,
+          paddingTop: 6,
         },
         tabBarActiveTintColor: PSBColors.primary.green,
         tabBarInactiveTintColor: PSBColors.text.tertiary,
