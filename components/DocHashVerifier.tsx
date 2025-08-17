@@ -8,7 +8,8 @@ import { VerificationReport, VerificationResult } from "./VerificationReport";
 import { DocumentVault } from "./DocumentVault";
 import { useDocumentStorage } from "../hooks/useDocumentStorage";
 import API from "../api/api";
-
+import { PSBColors } from "../utils/PSBColors";
+import { colors } from "../utils/colors";
 
 interface FileInfo {
   uri: string;
@@ -36,7 +37,6 @@ async function saveDocumentToBackend(document: any) {
     throw error;
   }
 }
-
 
 export const DocHashVerifier = () => {
   const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);
@@ -94,7 +94,7 @@ export const DocHashVerifier = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.badge}>
-          <Shield size={20} color="#3b82f6" />
+          <Shield size={20} color={PSBColors.primary.green} />
           <Text style={styles.badgeText}>
             Decentralized Document Verification
           </Text>
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#dbeafe",
+    backgroundColor: colors.primary.lightGreen,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#3b82f6",
+    color: PSBColors.primary.green,
   },
   title: {
     fontSize: 32,

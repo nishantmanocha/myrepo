@@ -12,6 +12,7 @@ import TaxCalculator from "../../../components/TaxCalculator";
 import ReceiptUpload from "../../../components/ReceiptUpload";
 import PDFReportGenerator from "../../../components/PDFReportGenerator";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { PSBColors } from "../../../utils/PSBColors";
 
 const TaxCalculatorPage = () => {
   const [activeTab, setActiveTab] = useState("calculator");
@@ -147,7 +148,11 @@ const TaxCalculatorPage = () => {
               >
                 <IconComponent
                   size={20}
-                  color={activeTab === tab.id ? "#ffffff" : "#3b82f6"}
+                  color={
+                    activeTab === tab.id
+                      ? "#ffffff"
+                      : PSBColors.primary.darkGreen
+                  }
                 />
                 <Text
                   style={[
@@ -176,7 +181,7 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 16,
     paddingBottom: 20,
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
     alignItems: "center",
   },
   title: {
@@ -208,16 +213,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "#e6f0ff",
+    backgroundColor: PSBColors.primary.lightGreen,
     marginRight: 10,
   },
   activeTab: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
   },
   tabText: {
     marginLeft: 8,
     fontSize: 14,
-    color: "#3b82f6",
+    color: PSBColors.primary.darkGreen,
   },
   activeTabText: {
     color: "#ffffff",

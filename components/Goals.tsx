@@ -33,6 +33,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useGoals } from "../contexts/GoalsContext";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { PSBColors } from "../utils/PSBColors";
 
 const { width } = Dimensions.get("window");
 
@@ -109,7 +110,6 @@ export default function Goals() {
     },
   ];
 
-
   const addNewGoal = () => {
     if (!newGoal.title || !newGoal.amount || !newGoal.targetDate) {
       Alert.alert("Error", "Please fill in all fields");
@@ -123,7 +123,7 @@ export default function Goals() {
       1,
       Math.ceil(
         (targetDate.getTime() - currentDate.getTime()) /
-        (1000 * 60 * 60 * 24 * 30)
+          (1000 * 60 * 60 * 24 * 30)
       )
     );
     const monthlyTarget = Math.ceil(targetAmount / monthsRemaining);
@@ -204,8 +204,13 @@ export default function Goals() {
         {/* Header with Gradient */}
 
         <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitle}>Your Goals</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={styles.sectionIconContainer}>
+              <Target size={24} color={PSBColors.primary.green} />
+            </View>
+            <View>
+              <Text style={styles.headerTitle}>Your Goals</Text>
+            </View>
           </View>
           <TouchableOpacity
             style={styles.addButton}
@@ -214,6 +219,7 @@ export default function Goals() {
             <Plus size={24} color="#000" />
           </TouchableOpacity>
         </View>
+        {/* <View style={styles.sectionDivider} /> */}
 
         {/* Active Goals */}
         <View style={styles.section}>
@@ -291,7 +297,6 @@ export default function Goals() {
                         </Text>
                       </View>
                     </View>
-
                   </LinearGradient>
                 </TouchableOpacity>
               );
@@ -471,19 +476,26 @@ export default function Goals() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F3F6F3",
+    // backgroundColor: "#F3F6F3",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: PSBColors.primary.green + "15",
+    // paddingHorizontal: 20,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "800",
     color: "#00563F",
   },
+  // sectionDivider: {
+  //   height: 24,
+  //   backgroundColor: "gray",
+  // },
   headerSubtitle: {
     fontSize: 16,
     color: "#FFD93D",
@@ -501,8 +513,17 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 32,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     marginTop: 24,
+  },
+  sectionIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: PSBColors.primary.green + "15",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -671,7 +692,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginLeft: 6,
   },
-    viewAllButton: {
+  viewAllButton: {
     borderRadius: 12,
     elevation: 4,
     shadowColor: "#000",
@@ -679,7 +700,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     marginTop: 16,
-    marginHorizontal: 20,
+    // marginHorizontal: 20,
   },
   viewAllGradient: {
     flexDirection: "row",

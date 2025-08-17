@@ -51,7 +51,7 @@ export default function Index() {
   const resetSimulation = () => {
     setCurrentStep("intro");
     setUserData({ account: "", otp: "", password: "" });
-    router.push("/(app)/(tabs)");
+    router.push("/(app)/(tabs)/simulator");
   };
 
   if (currentStep === "intro") {

@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
-import { Download, FileText } from 'lucide-react-native';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { Download, FileText } from "lucide-react-native";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
+import { PSBColors } from "../utils/PSBColors";
 
 interface TaxData {
   income: number;
@@ -127,14 +122,14 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ taxData }) => {
 
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, {
-          mimeType: 'application/pdf',
-          dialogTitle: 'Share Tax Report',
+          mimeType: "application/pdf",
+          dialogTitle: "Share Tax Report",
         });
       } else {
-        Alert.alert('Success', 'PDF report generated successfully');
+        Alert.alert("Success", "PDF report generated successfully");
       }
     } catch (error) {
-      Alert.alert('Error', 'Could not generate PDF report');
+      Alert.alert("Error", "Could not generate PDF report");
     } finally {
       setIsGenerating(false);
     }
@@ -148,7 +143,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ taxData }) => {
             <FileText size={20} color="#333" />
             <View style={styles.titleText}>
               <Text style={styles.title}>Tax Report Summary</Text>
-              <Text style={styles.subtitle}>Generate comprehensive PDF report</Text>
+              <Text style={styles.subtitle}>
+                Generate comprehensive PDF report
+              </Text>
             </View>
           </View>
           {taxData.income > 0 && (
@@ -159,7 +156,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ taxData }) => {
             >
               <Download size={16} color="#fff" />
               <Text style={styles.buttonText}>
-                {isGenerating ? 'Generating...' : 'Download PDF'}
+                {isGenerating ? "Generating..." : "Download PDF"}
               </Text>
             </TouchableOpacity>
           )}
@@ -168,23 +165,30 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ taxData }) => {
         <View style={styles.summaryGrid}>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Annual Income</Text>
-            <Text style={styles.summaryValue}>₹{taxData.income.toLocaleString()}</Text>
+            <Text style={styles.summaryValue}>
+              ₹{taxData.income.toLocaleString()}
+            </Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Total Deductions</Text>
             <Text style={styles.summaryValue}>
-              ₹{Object.values(taxData.deductions).reduce((a, b) => a + b, 0).toLocaleString()}
+              ₹
+              {Object.values(taxData.deductions)
+                .reduce((a, b) => a + b, 0)
+                .toLocaleString()}
             </Text>
           </View>
           {taxData.income > 0 && (
             <>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryLabel}>Recommended Regime</Text>
-                <Text style={styles.summaryValue}>{taxData.recommendation}</Text>
+                <Text style={styles.summaryValue}>
+                  {taxData.recommendation}
+                </Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryLabel}>Tax Savings</Text>
-                <Text style={[styles.summaryValue, { color: '#28a745' }]}>
+                <Text style={[styles.summaryValue, { color: "#28a745" }]}>
                   ₹{Math.abs(taxData.savings).toLocaleString()}
                 </Text>
               </View>
@@ -211,7 +215,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ taxData }) => {
             </View>
             <View style={styles.includeItem}>
               <View style={styles.bullet} />
-              <Text style={styles.includeText}>Personalized recommendations</Text>
+              <Text style={styles.includeText}>
+                Personalized recommendations
+              </Text>
             </View>
             <View style={styles.includeItem}>
               <View style={styles.bullet} />
@@ -233,25 +239,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   titleText: {
@@ -259,90 +265,90 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   subtitle: {
     fontSize: 14,
-    color: '#6c757d',
+    color: "#6c757d",
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#0070ba',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: PSBColors.primary.darkGreen,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 6,
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginLeft: 8,
   },
   summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   summaryItem: {
-    width: '48%',
+    width: "48%",
     padding: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: "#f8f9fa",
     borderRadius: 8,
     marginBottom: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   summaryLabel: {
     fontSize: 12,
-    color: '#6c757d',
+    color: "#6c757d",
     marginBottom: 4,
   },
   summaryValue: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   separator: {
     height: 1,
-    backgroundColor: '#e9ecef',
+    backgroundColor: "#e9ecef",
     marginVertical: 20,
   },
   includesSection: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: "#f8f9fa",
     padding: 16,
     borderRadius: 8,
   },
   includesTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
-    color: '#333',
+    color: "#333",
   },
   includesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   includeItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '48%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "48%",
     marginBottom: 8,
   },
   bullet: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#0070ba',
+    backgroundColor: "#0070ba",
     marginRight: 8,
   },
   includeText: {
     fontSize: 12,
-    color: '#6c757d',
+    color: "#6c757d",
     flex: 1,
   },
 });

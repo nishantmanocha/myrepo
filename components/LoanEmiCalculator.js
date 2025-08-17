@@ -16,6 +16,7 @@ import {
   Calendar,
   Percent,
 } from "lucide-react-native";
+import { PSBColors } from "../utils/PSBColors";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -117,7 +118,7 @@ const LoanEmiCalculator = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
-          <CreditCard size={32} color="#0066cc" />
+          <CreditCard size={32} color={PSBColors.primary.darkGreen} />
           <Text style={styles.title}>Loan EMI Calculator</Text>
         </View>
         <Text style={styles.subtitle}>
@@ -341,7 +342,7 @@ const styles = StyleSheet.create({
   buttonContainer: { flexDirection: "row", gap: 12, marginTop: 8 },
   calculateButton: {
     flex: 1,
-    backgroundColor: "#0066cc",
+    backgroundColor: PSBColors.primary.darkGreen,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

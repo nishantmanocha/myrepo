@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Linking,
+  BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,7 +23,7 @@ import {
 } from "lucide-react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { PSBColors, PSBShadows, PSBSpacing } from "../../../utils/PSBColors";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import LessonsPage from "../pages/LessonsPage";
 
 const EducationScreen = () => {
@@ -30,6 +31,17 @@ const EducationScreen = () => {
   const [selectedTab, setSelectedTab] = useState<
     "glossary" | "lessons" | "resources"
   >("lessons");
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.push("/(app)/(tabs)");
+        return true;
+      }
+    );
+    return () => backHandler.remove(); // Clean up the listener
+  });
 
   const glossaryItems = [
     {

@@ -17,6 +17,7 @@ import {
   Layers,
 } from "lucide-react-native";
 import { LineChart } from "react-native-chart-kit";
+import { PSBColors } from "../utils/PSBColors";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -72,7 +73,7 @@ const CompoundInterestCalculator = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
-          <Calculator size={32} color="#0066cc" />
+          <Calculator size={32} color={PSBColors.primary.darkGreen} />
           <Text style={styles.title}>Compound Interest Calculator</Text>
         </View>
         <Text style={styles.subtitle}>
@@ -282,7 +283,7 @@ const styles = StyleSheet.create({
   },
   picker: { height: 50, width: "100%" },
   calculateButton: {
-    backgroundColor: "#0066cc",
+    backgroundColor: PSBColors.primary.darkGreen,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

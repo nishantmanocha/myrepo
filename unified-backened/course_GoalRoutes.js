@@ -822,11 +822,12 @@ module.exports = (app) => {
   app.get("/api/progress", authenticateToken, async (req, res) => {
     try {
       console.log("Fetching user progress for user:", req.user.id);
-      const { type } = req.query;
+      const { type, courseId } = req.query;
 
       let filter = { userId: req.user.id };
 
       if (type) filter.type = type;
+      if (courseId) filter.courseId = courseId;
 
       const progress = await UserProgress.find(filter).sort({ createdAt: -1 });
 

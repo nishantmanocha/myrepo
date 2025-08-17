@@ -17,6 +17,7 @@ import {
 import SimpleInterestCalculator from "./SimpleInterestCalculator";
 import LoanEmiCalculator from "./LoanEmiCalculator";
 import CompoundInterestCalculator from "./CompoundInterestCalculator";
+import { PSBColors } from "../utils/PSBColors";
 
 const CalculatorApp = () => {
   const [activeTab, setActiveTab] = useState("simple");
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
     paddingVertical: 32,
     paddingHorizontal: 16,
   },
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: 4,
   },
   activeTab: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

@@ -12,6 +12,8 @@ import {
 import { Save, Clock, FileText, Trash2, Shield } from "lucide-react-native";
 import { useDocumentStorage, SavedDocument } from "../hooks/useDocumentStorage";
 import API from "../api/api";
+import { PSBColors } from "../utils/PSBColors";
+import { colors } from "../utils/colors";
 
 interface FileInfo {
   uri: string;
@@ -37,8 +39,6 @@ async function saveDocumentToBackend(document: any) {
     throw error;
   }
 }
-
-
 
 export const DocumentVault = ({ file, hash }: DocumentVaultProps) => {
   const { saveDocument, getDocumentsByWallet, deleteDocument } =
@@ -124,7 +124,7 @@ export const DocumentVault = ({ file, hash }: DocumentVaultProps) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.iconContainer}>
-            <Shield size={20} color="#3b82f6" />
+            <Shield size={20} color={PSBColors.primary.green} />
           </View>
           <View>
             <Text style={styles.title}>Document Vault</Text>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    backgroundColor: "#dbeafe",
+    backgroundColor: colors.primary.lightGreen,
     padding: 8,
     borderRadius: 8,
   },
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   saveButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.green,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   documentIconBar: {
     width: 6,
     height: "100%",
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.green,
     borderRadius: 4,
     marginRight: 12,
   },

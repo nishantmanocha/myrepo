@@ -1,10 +1,10 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  PSBColors,
-  PSBSpacing,
-  PSBShadows,
   PSBBorderRadius,
+  PSBColors,
+  PSBShadows,
+  PSBSpacing,
 } from "../../../utils/PSBColors";
 import {
   Animated,
@@ -15,6 +15,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeToggle from "../../../components/ThemeToggle";
@@ -29,60 +32,55 @@ import {
   Flag,
   GraduationCap,
   Lock,
+  Play,
   Search,
   Shield,
   Smartphone,
-  Target,
-  TrendingUp,
   Sparkles,
   Star,
-  Zap,
-  CircleCheck as CheckCircle,
+  Target,
+  TrendingUp,
   Users,
 } from "lucide-react-native";
 import ChatbotButton from "../../../components/ChatbotButton";
 import ChatbotPopup from "../../../components/ChatbotPopup";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useTheme } from "../../../contexts/ThemeContext";
 
-const { width, height } = Dimensions.get("window");
+const width = Dimensions.get("window").width;
 
 const home = () => {
   const features = [
     {
       id: 1,
       title: "Simulators",
-      description: "Interactive fraud scheme simulations",
+      description: "Understand fraud schemes through live simulations",
       icon: Brain,
       color: PSBColors.primary.green,
-      bgGradient: [PSBColors.background.primary, PSBColors.primary.lightGreen],
       route: "/(tabs)/simulator",
     },
     {
       id: 2,
       title: "Quizzes",
-      description: "Test your fraud awareness skills",
+      description: "Test your financial fraud awareness skills",
       icon: Flag,
-      color: PSBColors.status.warning,
-      bgGradient: [PSBColors.background.primary, "#FEF3C7"],
+      color: PSBColors.primary.gold,
       route: "/pages/QuizzesScreen",
     },
     {
       id: 3,
       title: "Decision Scenarios",
-      description: "Practice secure decision making",
+      description: "Practice secure financial decision making",
       icon: Target,
-      color: PSBColors.status.error,
-      bgGradient: [PSBColors.background.primary, "#FEE2E2"],
+      color: PSBColors.primary.gold,
       route: "/pages/ScenarioHub",
     },
     {
       id: 4,
       title: "Education Center",
-      description: "Trusted fraud prevention resources",
+      description: "Trusted resources for fraud prevention",
       icon: GraduationCap,
-      color: PSBColors.secondary.blue,
-      bgGradient: [PSBColors.background.primary, "#DBEAFE"],
+      color: PSBColors.primary.green,
       route: "/(app)/(tabs)/education",
     },
   ];
@@ -91,40 +89,44 @@ const home = () => {
     {
       id: 1,
       title: "EMI Calculator",
-      description: "Calculate loan EMIs with precision",
+      description: "Calculate loan EMIs with precision and ease",
       icon: Calculator,
-      color: PSBColors.primary.green,
-      bgColor: PSBColors.primary.lightGreen,
+      color: "#FF6B35",
+      bgColor: "#FFF3E0",
       route: "/pages/FdAndRdCalculator",
       badge: "Popular",
+      gradient: ["#FFF8F3", "#FFF3E0"],
     },
     {
       id: 2,
       title: "Tax Calculator",
-      description: "Calculate your tax liability",
+      description: "Calculate your tax liability accurately",
       icon: BarChart3,
-      color: PSBColors.secondary.blue,
-      bgColor: "#DBEAFE",
+      color: "#9C27B0",
+      bgColor: "#F3E5F5",
       route: "/pages/TaxCalculator",
+      gradient: ["#FCF7FF", "#F3E5F5"],
     },
     {
       id: 3,
       title: "SIP Calculator",
-      description: "Plan your investments smartly",
+      description: "Plan your investments for better returns",
       icon: TrendingUp,
-      color: PSBColors.status.success,
-      bgColor: "#DCFCE7",
+      color: "#4CAF50",
+      bgColor: "#E8F5E8",
       route: "/pages/SipTool",
       badge: "New",
+      gradient: ["#F8FFF8", "#E8F5E8"],
     },
     {
       id: 4,
       title: "URL Analyzer",
-      description: "Check suspicious URLs",
+      description: "Check suspicious URLs for safety",
       icon: Search,
-      color: PSBColors.status.warning,
-      bgColor: "#FEF3C7",
+      color: "#FF5722",
+      bgColor: "#FBE9E7",
       route: "/pages/UrlAnalysisTool",
+      gradient: ["#FFFAF9", "#FBE9E7"],
     },
   ];
 
@@ -132,71 +134,49 @@ const home = () => {
     {
       id: 1,
       title: "Phishing Simulator",
-      description: "Master phishing detection techniques",
+      description: "Learn to spot phishing attempts",
       icon: Smartphone,
-      color: PSBColors.status.error,
-      gradient: [PSBColors.status.error, "#F87171"],
+      color: "#E91E63",
+      gradient: ["#667eea", "#764ba2"] as const,
       route: "/pages/PhishingSimulator",
       difficulty: "Beginner",
-      completionRate: "94%",
     },
     {
       id: 2,
       title: "OTP Fraud",
-      description: "Learn OTP scam prevention",
+      description: "Understand OTP scams",
       icon: Lock,
-      color: PSBColors.secondary.blue,
-      gradient: [PSBColors.secondary.blue, "#60A5FA"],
+      color: "#9C27B0",
+      gradient: ["#f5576c", "#F50057"] as const,
       route: "/pages/identityTheftSimulator/index",
       difficulty: "Intermediate",
-      completionRate: "87%",
     },
     {
       id: 3,
       title: "Loan Scams",
-      description: "Identify fraudulent loan offers",
+      description: "Identify loan fraud patterns",
       icon: CreditCard,
-      color: PSBColors.status.info,
-      gradient: [PSBColors.status.info, "#60A5FA"],
+      color: "#00BCD4",
+      gradient: ["#00f2fe", "#4facfe"] as const,
       route: "/pages/loanScamSimulator/index",
       difficulty: "Advanced",
-      completionRate: "76%",
     },
     {
       id: 4,
       title: "Lottery Fraud",
-      description: "Spot fake lottery schemes",
+      description: "Spot lottery scams",
       icon: Award,
-      color: PSBColors.status.warning,
-      gradient: [PSBColors.status.warning, "#FCD34D"],
+      color: "#FF9800",
+      gradient: ["#8b5cf6", "#a855f7"] as const,
       route: "/pages/lotteryFraudSimulator/index",
       difficulty: "Beginner",
-      completionRate: "91%",
     },
   ];
 
   const stats = [
-    {
-      label: "Schemes Exposed",
-      value: "50+",
-      icon: Eye,
-      color: PSBColors.status.error,
-      bg: "#FEE2E2",
-    },
-    {
-      label: "Users Protected",
-      value: "10K+",
-      icon: Shield,
-      color: PSBColors.status.success,
-      bg: "#DCFCE7",
-    },
-    {
-      label: "Success Rate",
-      value: "95%",
-      icon: TrendingUp,
-      color: PSBColors.secondary.blue,
-      bg: "#DBEAFE",
-    },
+    { label: "Schemes Exposed", value: "50+", icon: Eye, color: "#FF6B6B" },
+    { label: "Users Protected", value: "10K+", icon: Shield, color: "#4ECDC4" },
+    { label: "Success Rate", value: "95%", icon: TrendingUp, color: "#45B7D1" },
   ];
 
   const tips = [
@@ -242,154 +222,172 @@ const home = () => {
 
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideUpAnim = useRef(new Animated.Value(50)).current;
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const { theme } = useTheme();
   const [isPopupVisible, setPopupVisible] = useState(false);
-
-  // Animation values
-  const headerAnim = useRef(new Animated.Value(-100)).current;
-  const statsAnim = useRef(new Animated.Value(0)).current;
-  const featuresAnim = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const cardFadeAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const waveAnim = useRef(new Animated.Value(0)).current;
+  const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+  const AnimatedView = Animated.createAnimatedComponent(View);
 
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        Alert.alert("Exit", "Are you sure you want to exit?", [
+          { text: "Cancel", style: "cancel" },
+          { text: "OK", onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+      }
+    );
+
+    return () => backHandler.remove(); // Clean up the listener
+  });
+
+  // ✅ Smooth fade-in on mount
   useEffect(() => {
-    // Staggered entrance animations
-    Animated.stagger(150, [
-      Animated.spring(headerAnim, {
-        toValue: 0,
-        tension: 60,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-      Animated.spring(statsAnim, {
-        toValue: 1,
-        tension: 60,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-      Animated.spring(featuresAnim, {
-        toValue: 0,
-        tension: 60,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 60,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Continuous rotation for sparkle icon
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 4000,
-        useNativeDriver: true,
-      })
-    ).start();
-
-    // Wave animation for emoji
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(waveAnim, {
-          toValue: -15,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(waveAnim, {
-          toValue: 15,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(waveAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.delay(2000),
-      ])
-    ).start();
-
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [fadeAnim]);
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.05,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [scaleAnim]);
+
+  useEffect(() => {
+    Animated.timing(cardFadeAnim, {
+      toValue: 1,
+      duration: 800,
+      delay: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [cardFadeAnim]);
+
+  // Continuous rotation for sparkle icon
+  Animated.loop(
+    Animated.timing(rotateAnim, {
+      toValue: 1,
+      duration: 4000,
+      useNativeDriver: true,
+    })
+  ).start();
+
+  // Wave animation for emoji
+  Animated.loop(
+    Animated.sequence([
+      Animated.timing(waveAnim, {
+        toValue: -15,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(waveAnim, {
+        toValue: 15,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(waveAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(2000),
+    ])
+  ).start();
 
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentIndex + 1) % tips.length;
+      setCurrentIndex(nextIndex);
       scrollRef.current?.scrollTo({
-        x: nextIndex * (width - 40),
+        x: nextIndex * (width - 30),
         animated: true,
       });
-      setCurrentIndex(nextIndex);
     }, 5000);
     return () => clearInterval(interval);
   }, [currentIndex]);
+
+  const handleScroll = (event: any) => {
+    const xOffset = event.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(xOffset / (width - 30));
+    setCurrentIndex(newIndex);
+  };
+
+  const featureScaleAnim = new Animated.Value(1);
+  const handlePressIn = () => {
+    Animated.spring(featureScaleAnim, {
+      toValue: 0.96,
+      useNativeDriver: true,
+    }).start();
+  };
+  const handlePressOut = () => {
+    Animated.spring(featureScaleAnim, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const handleOptionPress = (index: number) => {
     setSelectedOption(index);
     const correct = index === dailyQuiz.correctAnswer;
     setIsCorrect(correct);
   };
-
-  const handleScroll = (event: any) => {
-    const xOffset = event.nativeEvent.contentOffset.x;
-    const newIndex = Math.round(xOffset / (width - 40));
-    setCurrentIndex(newIndex);
-  };
-
   const handleCardPress = (route: string) => {
     router.push(route as any);
   };
 
-  const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-  const AnimatedView = Animated.createAnimatedComponent(View);
-
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-
-  const waveRotation = waveAnim.interpolate({
-    inputRange: [-15, 15],
-    outputRange: ["-15deg", "15deg"],
-  });
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case "beginner":
+        return "#10B981";
+      case "intermediate":
+        return "#F59E0B";
+      case "advanced":
+        return "#EF4444";
+      case "expert":
+        return "#8B5CF6";
+      default:
+        return "#6B7280";
+    }
+  };
 
   return (
     <LinearGradient
       colors={[PSBColors.background.primary, PSBColors.background.secondary]}
-      style={styles.container}
+      style={{ flex: 1 }}
     >
       <StatusBar
         barStyle="light-content"
         backgroundColor={PSBColors.primary.green}
-        translucent
       />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
-          bounces={true}
         >
-          {/* Enhanced PSB Header */}
-          <AnimatedView
-            style={[
-              styles.header,
-              {
-                transform: [{ translateY: headerAnim }],
-              },
-            ]}
-          >
+          {/* Header */}
+          <AnimatedView style={[styles.header, { opacity: fadeAnim }]}>
             <LinearGradient
               colors={[
                 PSBColors.gradient.primary[0],
@@ -401,12 +399,27 @@ const home = () => {
             >
               <View style={styles.headerContent}>
                 <View style={styles.greetingWrapper}>
+                  <View style={styles.logoRow}>
+                    <View style={styles.logoContainer}>
+                      <Shield size={28} color={PSBColors.primary.gold} />
+                      <Text style={styles.logoText}>FinEduGuard</Text>
+                    </View>
+                  </View>
                   <View style={styles.greetingRow}>
                     <Text style={styles.greeting}>Welcome Back!</Text>
                     <Animated.Text
                       style={[
                         styles.waveEmoji,
-                        { transform: [{ rotate: waveRotation }] },
+                        {
+                          transform: [
+                            {
+                              rotate: waveAnim.interpolate({
+                                inputRange: [-15, 15],
+                                outputRange: ["-15deg", "15deg"],
+                              }),
+                            },
+                          ],
+                        },
                       ]}
                     >
                       👋
@@ -431,20 +444,12 @@ const home = () => {
             </LinearGradient>
           </AnimatedView>
 
-          {/* Enhanced Stats Section with PSB Colors */}
+          {/* Stats */}
           <AnimatedView
             style={[
               styles.statsContainer,
               {
-                opacity: statsAnim,
-                transform: [
-                  {
-                    scale: statsAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1],
-                    }),
-                  },
-                ],
+                opacity: cardFadeAnim,
               },
             ]}
           >
@@ -455,7 +460,9 @@ const home = () => {
                   key={index}
                   style={[
                     styles.statCard,
-                    { backgroundColor: stat.bg },
+                    {
+                      opacity: cardFadeAnim,
+                    },
                     PSBShadows.md,
                   ]}
                 >
@@ -476,187 +483,248 @@ const home = () => {
             </View>
           </AnimatedView>
 
-          {/* Enhanced Features Section with PSB Branding */}
-          <AnimatedView
-            style={[
-              styles.featuresContainer,
-              {
-                transform: [{ translateY: featuresAnim }],
-                opacity: scaleAnim,
-              },
-            ]}
-          >
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Explore Services</Text>
-              <Text style={styles.sectionSubtitle}>
-                Interactive learning tools
-              </Text>
-            </View>
+          {/* Features */}
+          <View style={styles.featuresContainer}>
+            <Text style={styles.sectionTitle}>Explore Services</Text>
             <View style={styles.featuresGrid}>
-              {features.map((feature, index) => (
-                <TouchableOpacity
+              {features.map((feature) => (
+                <AnimatedTouchable
                   key={feature.id}
-                  style={[styles.featureCard, { borderColor: feature.color }]}
+                  style={[
+                    styles.featureCard,
+                    {
+                      opacity: cardFadeAnim,
+                      // transform: [{ scale: scaleAnim }],
+                    },
+                  ]}
+                  onPressIn={handlePressIn}
+                  onPressOut={handlePressOut}
                   onPress={() => router.push(feature.route as any)}
-                  activeOpacity={0.7}
+                  activeOpacity={0.85}
                 >
                   <LinearGradient
-                    colors={[feature.bgGradient[0], feature.bgGradient[1]]}
-                    style={styles.featureGradient}
+                    colors={["#FFFFFF", "#FFF8E1"]}
+                    style={[
+                      styles.featureGradient,
+                      { borderColor: feature.color },
+                    ]}
                   >
-                    <View
-                      style={[
-                        styles.featureIconContainer,
-                        { backgroundColor: feature.color + "15" },
-                      ]}
-                    >
-                      <feature.icon size={32} color={feature.color} />
-                    </View>
+                    <feature.icon size={32} color={feature.color} />
                     <Text style={styles.featureTitle}>{feature.title}</Text>
                     <Text style={styles.featureDescription}>
                       {feature.description}
                     </Text>
-                    <View
-                      style={[
-                        styles.featureAccent,
-                        { backgroundColor: feature.color },
-                      ]}
-                    />
                   </LinearGradient>
-                </TouchableOpacity>
+                </AnimatedTouchable>
               ))}
             </View>
-          </AnimatedView>
+          </View>
 
-          {/* Enhanced Tools Section with PSB Colors */}
-          <View style={styles.toolsContainer}>
+          {/* Explore Tools Section */}
+          <View style={[styles.toolsContainer, { marginBottom: 70 }]}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Smart Tools</Text>
-              <TouchableOpacity
+              <Text style={styles.sectionTitle}>Explore Tools</Text>
+              <AnimatedTouchable
                 style={styles.viewAllButton}
                 onPress={() => router.push("/(tabs)/tools")}
                 activeOpacity={0.8}
               >
                 <Text style={styles.viewAllText}>View All</Text>
                 <ChevronRight size={16} color={PSBColors.primary.green} />
-              </TouchableOpacity>
+              </AnimatedTouchable>
             </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.toolsScroll}
-            >
+            <View style={[styles.toolsGrid, { marginTop: -50 }]}>
               {exploreTools.map((tool, index) => (
-                <TouchableOpacity
+                <AnimatedTouchable
                   key={tool.id}
                   style={[
                     styles.toolCard,
-                    { backgroundColor: tool.bgColor },
-                    PSBShadows.md,
+                    {
+                      opacity: fadeAnim,
+                      transform: [{ translateY: slideUpAnim }],
+                    },
                   ]}
                   onPress={() => handleCardPress(tool.route)}
-                  activeOpacity={0.8}
+                  activeOpacity={0.95}
                 >
-                  <View style={styles.toolHeader}>
-                    <View
-                      style={[
-                        styles.toolIconContainer,
-                        { backgroundColor: tool.color + "20" },
-                      ]}
-                    >
-                      <tool.icon size={24} color={tool.color} />
-                    </View>
-                    {tool.badge && (
+                  <LinearGradient
+                    colors={[tool.gradient[0], tool.gradient[1]]}
+                    style={[
+                      styles.toolGradient,
+                      {
+                        borderColor: tool.color,
+                        borderWidth: 0.8,
+                      },
+                    ]}
+                  >
+                    <View style={styles.toolHeader}>
                       <View
                         style={[
-                          styles.toolBadge,
-                          { backgroundColor: tool.color },
+                          styles.toolIconContainer,
+                          {
+                            backgroundColor: tool.color + "15",
+                            borderColor: tool.color + "25",
+                          },
                         ]}
                       >
-                        <Text style={styles.toolBadgeText}>{tool.badge}</Text>
+                        <tool.icon
+                          size={22}
+                          color={tool.color}
+                          strokeWidth={2.5}
+                        />
                       </View>
-                    )}
-                  </View>
-                  <Text style={[styles.toolTitle, { color: tool.color }]}>
-                    {tool.title}
-                  </Text>
-                  <Text style={styles.toolDescription}>{tool.description}</Text>
-                </TouchableOpacity>
+                      {tool.badge && (
+                        <View
+                          style={[
+                            styles.toolBadge,
+                            { backgroundColor: tool.color },
+                          ]}
+                        >
+                          <Text style={styles.toolBadgeText}>{tool.badge}</Text>
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.toolContent}>
+                      <Text style={[styles.toolTitle, { color: tool.color }]}>
+                        {tool.title}
+                      </Text>
+                      <Text style={styles.toolDescription}>
+                        {tool.description}
+                      </Text>
+                    </View>
+                    <View style={styles.toolFooter}>
+                      <View style={styles.toolAction}>
+                        <Text
+                          style={[styles.toolActionText, { color: tool.color }]}
+                        >
+                          Try Now
+                        </Text>
+                        <ChevronRight
+                          size={14}
+                          color={tool.color}
+                          strokeWidth={2}
+                        />
+                      </View>
+                    </View>
+                  </LinearGradient>
+                </AnimatedTouchable>
               ))}
-            </ScrollView>
+            </View>
           </View>
 
-          {/* Enhanced Simulators Section with PSB Branding */}
+          {/* Our Simulators Section */}
           <View style={styles.simulatorsContainer}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Popular Simulators</Text>
+              <Text style={styles.sectionTitle}>Our Simulators</Text>
               <TouchableOpacity
                 style={styles.viewAllButton}
                 onPress={() => router.push("/(tabs)/simulator")}
-                activeOpacity={0.8}
+                activeOpacity={0.7}
               >
                 <Text style={styles.viewAllText}>View All</Text>
                 <ChevronRight size={16} color={PSBColors.primary.green} />
               </TouchableOpacity>
             </View>
+
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.simulatorsScroll}
+              // contentContainerStyle={styles.simulatorsScroll}
+              decelerationRate="fast"
+              snapToInterval={width * 0.75 + 16}
+              snapToAlignment="start"
             >
               {ourSimulators.map((simulator, index) => (
                 <TouchableOpacity
                   key={simulator.id}
-                  style={[styles.simulatorCard, PSBShadows.lg]}
+                  style={styles.simulatorCard}
                   onPress={() => handleCardPress(simulator.route)}
-                  activeOpacity={0.8}
+                  activeOpacity={0.95}
                 >
-                  <LinearGradient
-                    colors={[simulator.gradient[0], simulator.gradient[1]]}
-                    style={styles.simulatorGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1.2, y: 1.2 }}
-                  >
-                    <View style={styles.simulatorHeader}>
-                      <View style={styles.simulatorIconContainer}>
-                        <simulator.icon
-                          size={28}
-                          color={PSBColors.text.inverse}
-                        />
+                  <View style={styles.cardContainer}>
+                    <LinearGradient
+                      colors={[
+                        ...simulator.gradient,
+                        simulator.gradient[1] + "E6",
+                      ]}
+                      style={styles.simulatorGradient}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                    >
+                      {/* Card Content */}
+                      <View style={styles.cardContent}>
+                        {/* Header Section */}
+                        <View style={styles.simulatorHeader}>
+                          <View style={styles.simulatorIconContainer}>
+                            <simulator.icon
+                              size={24}
+                              color="#FFFFFF"
+                              strokeWidth={2}
+                            />
+                          </View>
+                          <View
+                            style={[
+                              styles.difficultyBadge,
+                              {
+                                backgroundColor: getDifficultyColor(
+                                  simulator.difficulty
+                                ),
+                              },
+                            ]}
+                          >
+                            <Text style={styles.difficultyText}>
+                              {simulator.difficulty}
+                            </Text>
+                          </View>
+                        </View>
+
+                        {/* Main Content */}
+                        <View style={styles.simulatorContent}>
+                          <Text style={styles.simulatorTitle}>
+                            {simulator.title}
+                          </Text>
+                          <Text style={styles.simulatorDescription}>
+                            {simulator.description}
+                          </Text>
+                        </View>
+
+                        {/* Footer */}
+                        <View style={styles.simulatorFooter}>
+                          <View style={styles.actionContainer}>
+                            <Play size={14} color="#FFFFFF" fill="#FFFFFF" />
+                            <Text style={styles.simulatorAction}>
+                              Start Simulation
+                            </Text>
+                          </View>
+                          <ChevronRight
+                            size={16}
+                            color="#FFFFFF"
+                            strokeWidth={2}
+                          />
+                        </View>
                       </View>
-                      <View style={styles.difficultyBadge}>
-                        <Text style={styles.difficultyText}>
-                          {simulator.difficulty}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.simulatorContent}>
-                      <Text style={styles.simulatorTitle}>
-                        {simulator.title}
-                      </Text>
-                      <Text style={styles.simulatorDescription}>
-                        {simulator.description}
-                      </Text>
-                    </View>
-                    <View style={styles.simulatorFooter}>
-                      <Text style={styles.completionRate}>
-                        {simulator.completionRate} completion
-                      </Text>
-                      <Text style={styles.simulatorAction}>
-                        Start Learning →
-                      </Text>
-                    </View>
-                  </LinearGradient>
+
+                      {/* Subtle Pattern Overlay */}
+                      <View style={styles.patternOverlay} />
+                    </LinearGradient>
+
+                    {/* Glass Effect Border */}
+                    <View style={styles.glassBorder} />
+                  </View>
                 </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
 
-          {/* Enhanced Daily Quiz with PSB Branding */}
+          {/* Daily Quiz Section */}
           <View style={styles.quizContainer}>
             <Text style={styles.sectionTitle}>Daily Challenge</Text>
             <TouchableOpacity
-              style={[styles.quizCard, PSBShadows.lg]}
+              style={[
+                styles.quizCard,
+                PSBShadows.lg,
+                { borderWidth: 1, borderColor: dailyQuiz.color + "20" },
+              ]}
               activeOpacity={0.9}
             >
               <LinearGradient
@@ -666,7 +734,16 @@ const home = () => {
                 <View style={styles.quizHeader}>
                   <View style={styles.quizIconContainer}>
                     <Animated.View
-                      style={{ transform: [{ rotate: rotation }] }}
+                      style={{
+                        transform: [
+                          {
+                            rotate: rotateAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: ["0deg", "360deg"],
+                            }),
+                          },
+                        ],
+                      }}
                     >
                       <dailyQuiz.icon size={28} color={dailyQuiz.color} />
                     </Animated.View>
@@ -780,12 +857,12 @@ const home = () => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.tipsScroll}
               onScroll={handleScroll}
-              scrollEventThrottle={16}
+              scrollEventThrottle={0.0001}
             >
               {tips.map((tip, index) => (
                 <View
                   key={index}
-                  style={[styles.tipCard, { width: width - 40 }]}
+                  style={[styles.tipCard, { width: width - 50 }]}
                 >
                   <LinearGradient
                     colors={[tip.gradient[0], tip.gradient[1]]}
@@ -818,6 +895,7 @@ const home = () => {
           </View>
         </ScrollView>
 
+        {/* Chatbot */}
         <ChatbotButton onPress={() => setPopupVisible(true)} />
         <ChatbotPopup
           visible={isPopupVisible}
@@ -829,9 +907,6 @@ const home = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   safeArea: {
     flex: 1,
   },
@@ -839,12 +914,12 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // Enhanced Header with PSB Branding
+  // Header with Logo
   header: {
     marginBottom: PSBSpacing.lg,
   },
   headerGradient: {
-    paddingTop: 60,
+    paddingTop: 20,
     paddingBottom: 30,
     paddingHorizontal: PSBSpacing.lg,
     borderBottomLeftRadius: 30,
@@ -859,19 +934,39 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 15,
   },
+  logoRow: {
+    marginBottom: PSBSpacing.md,
+  },
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: PSBColors.primary.gold,
+    marginLeft: 8,
+    letterSpacing: -0.5,
+  },
   greetingRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: PSBSpacing.sm,
   },
   greeting: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "700",
-    color: PSBColors.primary.gold,
+    color: PSBColors.text.inverse,
     marginRight: 10,
   },
   waveEmoji: {
-    fontSize: 28,
+    fontSize: 24,
     marginLeft: 5,
   },
   subtitle: {
@@ -897,130 +992,121 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
 
-  // Enhanced Stats with PSB Colors
+  // Stats Section
   statsContainer: {
     paddingHorizontal: PSBSpacing.lg,
-    marginBottom: 40,
+    marginBottom: PSBSpacing.xl,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: PSBColors.text.accent,
-    marginBottom: 16,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: PSBColors.text.secondary,
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: "bold",
+    color: PSBColors.primary.green,
+    // marginBottom: PSBSpacing.lg,
+    textShadowColor: "rgba(0, 0, 0, 0.1)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   statsRow: {
+    marginTop: PSBSpacing.md,
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 12,
+    gap: 16,
   },
   statCard: {
     flex: 1,
-    borderRadius: PSBBorderRadius.xl,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    backgroundColor: PSBColors.background.card,
+    borderRadius: PSBBorderRadius.lg,
+    paddingVertical: 16,
     alignItems: "center",
+    ...PSBShadows.md,
     borderWidth: 1,
-    borderColor: PSBColors.border.primary,
+    borderColor: "rgba(2, 0, 2, 0.1)",
+    paddingHorizontal: 12,
   },
   statIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 4,
+    fontSize: 22,
+    fontWeight: "bold",
+    color: PSBColors.primary.green,
+    marginTop: 4,
   },
   statLabel: {
     fontSize: 12,
     color: PSBColors.text.secondary,
     textAlign: "center",
+    marginTop: 4,
     fontWeight: "500",
   },
 
-  // Enhanced Features with PSB Branding
+  // Features Section
   featuresContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 40,
-  },
-  sectionHeader: {
-    marginBottom: 20,
+    paddingHorizontal: PSBSpacing.lg,
+    marginBottom: PSBSpacing.xl,
   },
   featuresGrid: {
+    marginTop: PSBSpacing.md,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: 16,
   },
   featureCard: {
-    width: (width - 56) / 2,
-    borderRadius: 24,
+    width: (width - 60) / 2,
+    height: 160,
+    marginBottom: 15,
+    borderRadius: 16,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    borderWidth: 0.5,
+    ...PSBShadows.lg,
   },
   featureGradient: {
-    padding: 24,
-    alignItems: "center",
-    minHeight: 180,
-    justifyContent: "center",
-    position: "relative",
-  },
-  featureIconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    flex: 1,
+    padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    borderWidth: 1,
+    borderRadius: 16,
   },
   featureTitle: {
     fontSize: 16,
-    fontWeight: "700",
-    color: PSBColors.text.primary,
+    fontWeight: "bold",
+    marginTop: 12,
     textAlign: "center",
-    marginBottom: 8,
+    color: PSBColors.primary.green,
   },
   featureDescription: {
     fontSize: 12,
     color: PSBColors.text.secondary,
     textAlign: "center",
+    marginTop: 8,
     lineHeight: 16,
   },
-  featureAccent: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 4,
-  },
 
-  // Enhanced Tools with PSB Colors
+  // Enhanced Tools Section
   toolsContainer: {
     paddingHorizontal: PSBSpacing.lg,
-    marginBottom: 40,
+    marginBottom: PSBSpacing.xl,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: PSBSpacing.lg,
   },
   viewAllButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: PSBBorderRadius.xl,
-    backgroundColor: PSBColors.background.surface,
+    paddingHorizontal: 12,
+    backgroundColor: PSBColors.primary.green + "15",
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: PSBColors.border.accent,
+    borderColor: PSBColors.primary.green + "30",
   },
   viewAllText: {
     fontSize: 14,
@@ -1028,135 +1114,204 @@ const styles = StyleSheet.create({
     color: PSBColors.primary.green,
     marginRight: 4,
   },
-  toolsScroll: {
-    paddingRight: 20,
+  toolsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   toolCard: {
-    width: 160,
+    width: (width - 60) / 2,
     height: 180,
-    marginRight: 16,
-    borderRadius: PSBBorderRadius.xl,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: PSBColors.border.primary,
+    marginBottom: PSBSpacing.lg,
+    borderRadius: 20,
+    overflow: "hidden",
+    ...PSBShadows.lg,
+  },
+  toolGradient: {
+    flex: 1,
+    padding: 18,
+    borderRadius: 20,
+    // borderWidth: 0.7,
+    // borderColor: "rgba(0,0,0,0.07)",
   },
   toolHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 16,
+    marginBottom: 12,
   },
   toolIconContainer: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
   },
-  toolBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: PSBBorderRadius.lg,
-  },
-  toolBadgeText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: PSBColors.text.inverse,
+  toolContent: {
+    flex: 1,
+    marginBottom: 12,
   },
   toolTitle: {
     fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 8,
+    fontWeight: "bold",
+    marginBottom: 6,
+    letterSpacing: -0.3,
   },
   toolDescription: {
     fontSize: 12,
     color: PSBColors.text.secondary,
     lineHeight: 16,
   },
+  toolFooter: {
+    marginTop: "auto",
+  },
+  toolAction: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  toolActionText: {
+    fontSize: 13,
+    fontWeight: "600",
+    marginRight: 4,
+  },
+  toolBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    alignSelf: "flex-start",
+  },
+  toolBadgeText: {
+    fontSize: 9,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
 
-  // Enhanced Simulators with PSB Colors
+  // Simulators Section
   simulatorsContainer: {
+    marginBottom: PSBSpacing.xl,
     paddingHorizontal: PSBSpacing.lg,
-    marginBottom: 40,
   },
-  simulatorsScroll: {
-    paddingRight: 20,
-  },
+  // simulatorsScroll: {
+  //   paddingLeft: PSBSpacing.lg,
+  //   paddingRight: 4,
+  // },
   simulatorCard: {
-    width: 280,
-    height: 220,
-    marginRight: 20,
-    borderRadius: 24,
-    overflow: "hidden",
+    width: width * 0.75,
+    height: 200,
+    marginRight: 16,
+  },
+  cardContainer: {
+    flex: 1,
+    borderRadius: 20,
+    ...PSBShadows.accent,
   },
   simulatorGradient: {
     flex: 1,
-    padding: 24,
-    justifyContent: "space-between",
+    borderRadius: 20,
+    overflow: "hidden",
+    position: "relative",
+  },
+  cardContent: {
+    flex: 1,
+    padding: 20,
+    zIndex: 2,
   },
   simulatorHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    marginBottom: 16,
   },
   simulatorIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   difficultyBadge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: PSBBorderRadius.lg,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 16,
+    alignSelf: "flex-start",
   },
   difficultyText: {
     fontSize: 12,
     fontWeight: "600",
-    color: PSBColors.text.inverse,
+    color: "#FFFFFF",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   simulatorContent: {
     flex: 1,
-    paddingVertical: 16,
+    justifyContent: "center",
   },
   simulatorTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: PSBColors.text.inverse,
+    color: "#FFFFFF",
     marginBottom: 8,
+    letterSpacing: -0.3,
   },
   simulatorDescription: {
     fontSize: 14,
-    color: PSBColors.text.inverse,
+    color: "rgba(255, 255, 255, 0.85)",
     lineHeight: 20,
-    opacity: 0.9,
+    fontWeight: "400",
   },
   simulatorFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 16,
   },
-  completionRate: {
-    fontSize: 12,
-    color: PSBColors.text.inverse,
-    fontWeight: "500",
-    opacity: 0.8,
+  actionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   simulatorAction: {
     fontSize: 14,
     fontWeight: "600",
-    color: PSBColors.text.inverse,
+    color: "#FFFFFF",
+    marginLeft: 8,
+    letterSpacing: -0.1,
+  },
+  patternOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.1,
+    backgroundColor: "transparent",
+    borderRadius: 20,
+  },
+  glassBorder: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    pointerEvents: "none",
   },
 
-  // Enhanced Quiz with PSB Branding
+  // Quiz Section
   quizContainer: {
     paddingHorizontal: PSBSpacing.lg,
-    marginBottom: 40,
+    marginBottom: PSBSpacing.xl,
   },
   quizCard: {
+    marginTop: PSBSpacing.lg,
     borderRadius: 24,
     overflow: "hidden",
   },
@@ -1220,7 +1375,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: PSBColors.background.primary,
     borderRadius: PSBBorderRadius.lg,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: PSBColors.border.primary,
     ...PSBShadows.sm,
   },
@@ -1269,18 +1424,22 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Enhanced Tips with PSB Colors
+  // Tips Section
   tipsContainer: {
     paddingHorizontal: PSBSpacing.lg,
-    marginBottom: 40,
+    marginBottom: -55,
+    // marginBottom: PSBSpacing.xl,
   },
   tipsScroll: {
     paddingRight: 20,
   },
   tipCard: {
     marginRight: 20,
+    marginTop: PSBSpacing.lg,
     borderRadius: PSBBorderRadius.xl,
     overflow: "hidden",
+    borderWidth: 0.8,
+    borderColor: "rgba(0, 0, 0, 0.05)",
   },
   tipGradient: {
     padding: 20,

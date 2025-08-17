@@ -29,8 +29,6 @@ interface InputSectionProps {
   updateInput: (field: keyof SipInputs, value: number) => void;
   resetInputs: () => void;
   getFieldError: (field: keyof SipInputs) => string | undefined;
-  showAdvanced: boolean;
-  setShowAdvanced: (show: boolean) => void;
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
@@ -38,8 +36,6 @@ export const InputSection: React.FC<InputSectionProps> = ({
   updateInput,
   resetInputs,
   getFieldError,
-  showAdvanced,
-  setShowAdvanced,
 }) => {
   const handleReset = () => {
     Alert.alert(
@@ -115,7 +111,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
 
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.advancedButton}
           onPress={() => setShowAdvanced(!showAdvanced)}
         >
@@ -127,10 +123,10 @@ export const InputSection: React.FC<InputSectionProps> = ({
           <Text style={styles.advancedButtonText}>
             {showAdvanced ? "Hide Advanced" : "Show Advanced"}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-          <RotateCcw size={16} color="#64748b" />
+          <RotateCcw size={18} color="#64748b" />
           <Text style={styles.resetButtonText}>Reset</Text>
         </TouchableOpacity>
       </View>
@@ -324,7 +320,7 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginTop: 8,
   },
   advancedButton: {
@@ -347,7 +343,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     backgroundColor: "#ffffff",
     borderRadius: 8,
     borderWidth: 1,
@@ -355,7 +351,7 @@ const styles = StyleSheet.create({
   },
   resetButtonText: {
     marginLeft: 8,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
     color: "#64748b",
   },

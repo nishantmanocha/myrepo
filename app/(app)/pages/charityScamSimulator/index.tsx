@@ -5,8 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  BackHandler,
 } from "react-native";
-import { Link, router } from "expo-router";
+import { Link, router, useFocusEffect } from "expo-router";
 import {
   Shield,
   TriangleAlert as AlertTriangle,
@@ -16,6 +17,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.replace("/(app)/(tabs)/simulator");
+        return true;
+      }
+    );
+
+    return () => backHandler.remove(); // Clean up the listener
+  });
+
   const scenarios = [
     {
       id: "medical",

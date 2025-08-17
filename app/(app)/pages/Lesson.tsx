@@ -28,14 +28,18 @@ export default function Lesson() {
       const course = await fetchCourse(courseId).then((res) => res.course);
       // console.log("Fetched course:", course);
       setCourse(course);
-      const progressData = await API.get(`/progress?type=course`).then(
-        (res) => res.data
-      );
-      setCurrentLessonIndex(
-        progressData.progress[0]?.lessonIndex + 1 === course.lessons.length
-          ? 0
-          : progressData.progress[0]?.lessonIndex + 1
-      );
+      const progressData = await API.get(
+        `/progress?type=course&courseId=${courseId}`
+      ).then((res) => res.data);
+      if (progressData.progress.length === 0) {
+        setCurrentLessonIndex(0);
+      } else {
+        setCurrentLessonIndex(
+          progressData.progress[0]?.lessonIndex + 1 === course.lessons.length
+            ? 0
+            : progressData.progress[0]?.lessonIndex + 1
+        );
+      }
       // setLesson(course.lessons[0]);
       progressData.progress.length !== 0
         ? setLesson(

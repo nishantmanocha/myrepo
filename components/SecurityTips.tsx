@@ -69,7 +69,7 @@ const SecurityTips = ({ onRestart }: SecurityTipsProps) => {
           <View style={styles.headerIcon}>
             <Ionicons name="shield-checkmark" size={32} color="#FFF" />
           </View>
-          <Text style={styles.title}>🛡️ How to Stay Protected</Text>
+          <Text style={styles.title}>How to Stay Protected</Text>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>Your Security Toolkit</Text>
           </View>

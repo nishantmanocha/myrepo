@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   StatusBar,
   Animated,
   Easing,
+  BackHandler,
 } from "react-native";
 import {
   Shield,
@@ -601,12 +602,23 @@ const BackgroundShapes: React.FC = () => {
   );
 };
 
-export default function SimulatorsScreen() {
+export default function ToolsScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
   const heroScaleAnim = useRef(new Animated.Value(0.95)).current;
   const titleWaveAnim = useRef(new Animated.Value(0)).current;
   const sparkleAnim = useRef(new Animated.Value(0)).current;
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.push("/(app)/(tabs)");
+        return true;
+      }
+    );
+    return () => backHandler.remove(); // Clean up the listener
+  });
 
   const fraudModules = simulatorModules.filter((m) => m.category === "fraud");
   const financialModules = simulatorModules.filter(
@@ -779,7 +791,7 @@ export default function SimulatorsScreen() {
 
         <View style={styles.section}>
           <CategoryHeader
-            title="🛡️ Fraud Detection & Prevention"
+            title="Fraud Detection & Prevention"
             subtitle="AI-powered security arsenal for ultimate protection"
             icon={Shield}
             color="#10b981"
@@ -794,7 +806,7 @@ export default function SimulatorsScreen() {
 
         <View style={styles.section}>
           <CategoryHeader
-            title="💰 Financial Analysis & Planning"
+            title="Financial Analysis & Planning"
             subtitle="Investment wizardry and wealth optimization suite"
             icon={Building}
             color="#667eea"
@@ -1410,7 +1422,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
-    backdropFilter: "blur(10px)",
+    // backdropFilter: "blur(10px)",
   },
   statItem: {
     alignItems: "center",

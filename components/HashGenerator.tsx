@@ -11,6 +11,8 @@ import {
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 import * as Clipboard from "expo-clipboard";
+import { PSBColors } from "../utils/PSBColors";
+import { colors } from "../utils/colors";
 
 interface FileInfo {
   uri: string;
@@ -96,7 +98,7 @@ export const HashGenerator = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Hash size={20} color="#3b82f6" />
+          <Hash size={20} color={PSBColors.primary.green} />
         </View>
         <View>
           <Text style={styles.title}>Document Hash</Text>
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   iconContainer: {
-    backgroundColor: "#dbeafe",
+    backgroundColor: colors.primary.lightGreen,
     padding: 8,
     borderRadius: 8,
   },

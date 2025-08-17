@@ -17,6 +17,7 @@ import {
 } from "lucide-react-native";
 import ResultsDisplay from "./ResultsDisplay";
 import { formatCurrency } from "../utils/formatters";
+import { PSBColors } from "../utils/PSBColors";
 
 const { width } = Dimensions.get("window");
 
@@ -124,13 +125,6 @@ const Calculator = () => {
     const monthlyRate = annualRate / 100;
     const totalInvested = monthlyDeposit * tenure;
 
-    // RD Formula: M = P × [((1 + r)^n - 1) / (1 - (1 + r)^(-1/3))]
-    // const maturity =
-    //   (monthlyDeposit * (Math.pow(1 + monthlyRate, tenure) - 1)) /
-    //   (1 - Math.pow(1 + monthlyRate, -1 / 3));
-    // const interestEarned = maturity - totalInvested;
-
-    // Generate monthly data
     const monthlyData = [];
     for (let month = 1; month <= tenure; month++) {
       const invested = monthlyDeposit * month;
@@ -155,50 +149,6 @@ const Calculator = () => {
     };
   };
 
-  // const calculateSIP = () => {
-  //   const monthlyInvestment = parseFloat(sipMonthlyInvestment);
-  //   const expectedReturn = parseFloat(sipExpectedReturn);
-  //   const tenure = parseInt(sipTenure);
-
-  //   if (monthlyInvestment <= 0 || expectedReturn < 0 || tenure <= 0) {
-  //     return null;
-  //   }
-
-  //   const monthlyRate = expectedReturn / 12 / 100;
-  //   const totalInvested = monthlyInvestment * tenure;
-
-  //   // SIP Formula: FV = P × ((1 + r)^n – 1) / r × (1 + r)
-  //   const futureValue =
-  //     ((monthlyInvestment * (Math.pow(1 + monthlyRate, tenure) - 1)) /
-  //       monthlyRate) *
-  //     (1 + monthlyRate);
-  //   const gains = futureValue - totalInvested;
-
-  //   // Generate monthly data
-  //   const monthlyData = [];
-  //   for (let month = 1; month <= tenure; month++) {
-  //     const invested = monthlyInvestment * month;
-  //     const monthlyFV =
-  //       ((monthlyInvestment * (Math.pow(1 + monthlyRate, month) - 1)) /
-  //         monthlyRate) *
-  //       (1 + monthlyRate);
-
-  //     monthlyData.push({
-  //       month,
-  //       invested: Math.round(invested * 100) / 100,
-  //       maturity: Math.round(monthlyFV * 100) / 100,
-  //       interest: Math.round((monthlyFV - invested) * 100) / 100,
-  //     });
-  //   }
-
-  //   return {
-  //     totalInvested: Math.round(totalInvested * 100) / 100,
-  //     maturityValue: Math.round(futureValue * 100) / 100,
-  //     interestEarned: Math.round(gains * 100) / 100,
-  //     monthlyData,
-  //   };
-  // };
-
   const handleCalculate = async () => {
     setLoading(true);
 
@@ -214,9 +164,6 @@ const Calculator = () => {
         case "rd":
           result = calculateRD();
           break;
-        // case "sip":
-        //   result = calculateSIP();
-        //   break;
       }
 
       if (!result) {
@@ -486,7 +433,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
     paddingHorizontal: 20,
     paddingVertical: 30,
     alignItems: "center",
@@ -534,7 +481,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   activeTabButton: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
   },
   tabButtonText: {
     fontSize: 14,
@@ -597,8 +544,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   activePickerOption: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
+    borderColor: PSBColors.primary.darkGreen,
   },
   pickerOptionText: {
     fontSize: 14,
@@ -608,7 +555,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   calculateButton: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: PSBColors.primary.darkGreen,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Easing,
   Animated,
   Platform,
+  BackHandler,
 } from "react-native";
 import {
   TriangleAlert,
@@ -408,8 +409,19 @@ export default function SimulatorsScreen() {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const fraudModules = simulatorModules.filter((m) => m.category === "fraud");
 
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        router.push("/(app)/(tabs)");
+        return true;
+      }
+    );
+    return () => backHandler.remove(); // Clean up the listener
+  });
+
   useEffect(() => {
-    Animated.parallel([
+    (Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 1000,
@@ -423,7 +435,7 @@ export default function SimulatorsScreen() {
         useNativeDriver: true,
       }),
     ]).start(),
-      [];
+      []);
   });
 
   return (

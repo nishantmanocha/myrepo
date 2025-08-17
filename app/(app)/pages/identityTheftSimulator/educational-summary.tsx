@@ -147,7 +147,7 @@ export default function EducationalSummaryScreen() {
 
         <TouchableOpacity
           style={styles.homeButton}
-          onPress={() => router.push("/(app)/(tabs)")}
+          onPress={() => router.push("/(app)/(tabs)/simulator")}
         >
           <Home size={20} color="#FFFFFF" />
           <Text style={styles.homeButtonText}>Return to Home</Text>

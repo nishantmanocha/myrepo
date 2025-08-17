@@ -10,6 +10,8 @@ import {
 import { Search, CheckCircle2, XCircle } from "lucide-react-native";
 import API from "../api/api"; // adjust path if needed
 import { useDocumentStorage } from "../hooks/useDocumentStorage";
+import { PSBColors } from "../utils/PSBColors";
+import { colors } from "../utils/colors";
 
 async function verifyDocument(data: any) {
   const res = await API.post("/verify", data);
@@ -20,7 +22,6 @@ async function saveDocumentToBackend(document: any) {
   const res = await API.post("/documents", document);
   return res.data;
 }
-
 
 export interface VerificationResult {
   isMatch: boolean;
@@ -88,7 +89,6 @@ export const HashVerifier = ({
       }
     }
 
-
     const result: VerificationResult = {
       isMatch,
       inputHash: normalizedInput,
@@ -97,12 +97,12 @@ export const HashVerifier = ({
       confidence: isMatch ? 100 : 0,
       savedDocument: savedDocument
         ? {
-          id: savedDocument.id,
-          filename: savedDocument.filename,
-          timestamp: savedDocument.timestamp,
-          size: savedDocument.size,
-          type: savedDocument.type, // Ensure type is always included
-        }
+            id: savedDocument.id,
+            filename: savedDocument.filename,
+            timestamp: savedDocument.timestamp,
+            size: savedDocument.size,
+            type: savedDocument.type, // Ensure type is always included
+          }
         : undefined,
     };
 
@@ -122,7 +122,7 @@ export const HashVerifier = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Search size={20} color="#3b82f6" />
+          <Search size={20} color={PSBColors.primary.green} />
         </View>
         <View>
           <Text style={styles.title}>Hash Verification</Text>
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   iconContainer: {
-    backgroundColor: "#dbeafe",
+    backgroundColor: colors.primary.lightGreen,
     padding: 8,
     borderRadius: 8,
   },
