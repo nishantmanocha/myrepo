@@ -13,11 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
-import Animated, {
-  FadeInUp,
-  FadeInDown,
-  SlideInRight,
-} from "react-native-reanimated";
+import { Animated } from "react-native";
 import { Button } from "./ui/Button";
 import {
   Card,
@@ -417,7 +413,7 @@ export function FraudAnalyzer() {
       >
         <CardHeader>
           <Animated.View
-            entering={SlideInRight.delay(300)}
+            
             style={styles.resultHeader}
           >
             <View style={styles.resultHeaderLeft}>
@@ -502,7 +498,6 @@ export function FraudAnalyzer() {
           {/* Security Issues Detected section */}
           {showIssues ? (
             <Animated.View
-              entering={FadeInUp.delay(500)}
               style={styles.flagsSection}
             >
               <View style={styles.flagsHeader}>
@@ -528,7 +523,6 @@ export function FraudAnalyzer() {
                   {urlScanResults.map((scan, idx) => (
                     <Animated.View
                       key={idx}
-                      entering={FadeInUp.delay(600 + idx * 100)}
                       style={styles.flagItem}
                     >
                       <Badge
@@ -572,7 +566,6 @@ export function FraudAnalyzer() {
             </Animated.View>
           ) : (
             <Animated.View
-              entering={FadeInUp.delay(500)}
               style={styles.noFlags}
             >
               <Ionicons name="checkmark-circle" size={24} color="#10b981" />
@@ -585,7 +578,6 @@ export function FraudAnalyzer() {
             </Animated.View>
           )}
           <Animated.View
-            entering={FadeInUp.delay(700)}
             style={styles.actionButtons}
           >
             {/* Copy button with no border, show 'Copied' if copied */}
@@ -835,7 +827,7 @@ export function FraudAnalyzer() {
             </Text>
           )}
         </View> */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.header}>
+        <Animated.View style={styles.header}>
           <View style={styles.headerTitle}>
             <View style={styles.logoContainer}>
               <Ionicons name="shield-checkmark" size={36} color="#10b981" />
@@ -866,7 +858,7 @@ export function FraudAnalyzer() {
           </View>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(200)}>
+                    <Animated.View>
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
@@ -951,7 +943,7 @@ export function FraudAnalyzer() {
                   />
 
                   {isAnalyzing && (
-                    <Animated.View entering={FadeInUp} style={styles.analyzing}>
+                    <Animated.View style={styles.analyzing}>
                       <View style={styles.analyzingHeader}>
                         <LoadingSpinner size={20} color="#10b981" />
                         <Text style={styles.analyzingText}>
@@ -1019,7 +1011,7 @@ export function FraudAnalyzer() {
                   />
 
                   {isAnalyzing && (
-                    <Animated.View entering={FadeInUp} style={styles.analyzing}>
+                    <Animated.View style={styles.analyzing}>
                       <View style={styles.analyzingHeader}>
                         <LoadingSpinner size={20} color="#10b981" />
                         <Text style={styles.analyzingText}>

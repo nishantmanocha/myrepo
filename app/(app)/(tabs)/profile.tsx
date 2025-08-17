@@ -9,7 +9,6 @@ import {
   Image,
   Dimensions,
   Platform,
-  BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -37,16 +36,13 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { setUser } from "../../../redux/slices/profileSlices";
 import { router, useFocusEffect } from "expo-router";
 import * as Animatable from "react-native-animatable";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from "react-native-reanimated";
+import { Animated } from "react-native";
 import { PSBColors, PSBShadows, PSBSpacing } from "../../../utils/PSBColors";
 import Goals from "../../../components/Goals";
 import { useGoals } from "../../../contexts/GoalsContext";
 import { colors } from "../../../utils/colors";
+import { useGamification } from "../../../hooks/useGamification";
+import BadgeUnlockModal from "../../../components/BadgeUnlockModal";
 
 const { width } = Dimensions.get("window");
 
@@ -57,18 +53,24 @@ const ProfileScreen = () => {
   const userProfile = useSelector((state: any) => state.profile?.user);
   const [userData, setUserData] = useState(null);
 
-  const progress = useSharedValue(0);
-  const headerScale = useSharedValue(1);
+  // Gamification hook
+  const {
+    progression,
+    badges,
+    isLoading: gamificationLoading,
+    error: gamificationError,
+    newBadge,
+    showBadgeModal,
+    closeBadgeModal,
+    updateDailyStreak,
+  } = useGamification();
+
+  const progress = useRef(new Animated.Value(0)).current;
+  const headerScale = useRef(new Animated.Value(1)).current;
 
   useFocusEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        router.push("/(app)/(tabs)");
-        return true;
-      }
-    );
-    return () => backHandler.remove(); // Clean up the listener
+    // Handle back navigation using expo-router
+    // The tab navigation will handle back button automatically
   });
 
   useEffect(() => {
@@ -93,53 +95,57 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     setLoginState();
-    headerScale.value = withSpring(1, { damping: 15 });
-  }, []);
+    Animated.spring(headerScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      damping: 15,
+    }).start();
+    
+    // Update daily streak when profile is opened
+    if (user) {
+      updateDailyStreak();
+    }
+  }, [user, updateDailyStreak]);
 
   const userStats = {
-    schemesExposed: 12,
-    redFlagsSpotted: 45,
-    storiesCompleted: 8,
-    badgesEarned: 6,
-    currentLevel: "Financial Detective",
-    experiencePoints: 2450,
-    nextLevelXP: 3000,
+    schemesExposed: progression?.stats?.scenariosCompleted || 0,
+    redFlagsSpotted: progression?.stats?.quizzesCompleted || 0,
+    storiesCompleted: progression?.stats?.coursesCompleted || 0,
+    badgesEarned: badges?.length || 0,
+    currentLevel: `Level ${progression?.level || 1}`,
+    experiencePoints: progression?.xp || 0,
+    nextLevelXP: progression?.xpForNextLevel || 500,
   };
 
-  const progressPercentage =
-    (userStats.experiencePoints / userStats.nextLevelXP) * 100;
+  const progressPercentage = progression?.progressToNextLevel || 0;
 
   useEffect(() => {
-    progress.value = withTiming(progressPercentage, { duration: 1200 });
+    Animated.timing(progress, {
+      toValue: progressPercentage,
+      duration: 1200,
+      useNativeDriver: false,
+    }).start();
   }, [progressPercentage]);
 
-  const animatedProgressStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progress.value}%`,
-      backgroundColor: PSBColors.primary.gold,
-    };
-  });
+  const animatedProgressStyle = {
+    width: `${progressPercentage}%`,
+    backgroundColor: PSBColors.primary.gold,
+  };
 
-  const animatedHeaderStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: headerScale.value }],
-    };
-  });
+  const animatedHeaderStyle = {
+    transform: [{ scale: headerScale }],
+  };
 
-  const badges = [
-    { name: "Red Flag Spotter", icon: Flag, color: "#ff6b6b", earned: true },
-    { name: "Collapse Survivor", icon: Shield, color: "#4ecdc4", earned: true },
-    { name: "Financial Detective", icon: "🔍", color: "#45b7d1", earned: true },
-    { name: "Story Master", icon: BookOpen, color: "#96ceb4", earned: true },
-    { name: "Scheme Buster", icon: "⚖️", color: "#ffd93d", earned: true },
-    { name: "Fraud Fighter", icon: "🛡️", color: "#ff9ff3", earned: true },
-    { name: "Awareness Champion", icon: "📢", color: "#54a0ff", earned: false },
-    {
-      name: "Master Educator",
-      icon: GraduationCap,
-      color: "#5f27cd",
-      earned: false,
-    },
+  // Get all available badges (you can fetch this from API)
+  const allBadges = [
+    { name: "First Steps", icon: "🎓", color: "#4ecdc4", earned: badges.some(b => b.name === "First Steps") },
+    { name: "Course Explorer", icon: "📚", color: "#45b7d1", earned: badges.some(b => b.name === "Course Explorer") },
+    { name: "Quiz Master", icon: "🎯", color: "#ff6b6b", earned: badges.some(b => b.name === "Quiz Master") },
+    { name: "Fraud Detective", icon: "🔍", color: "#54a0ff", earned: badges.some(b => b.name === "Fraud Detective") },
+    { name: "Tool Explorer", icon: "⚙️", color: "#45b7d1", earned: badges.some(b => b.name === "Tool Explorer") },
+    { name: "Week Warrior", icon: "🔥", color: "#ff6b6b", earned: badges.some(b => b.name === "Week Warrior") },
+    { name: "Financial Guru", icon: "👑", color: "#ff9ff3", earned: badges.some(b => b.name === "Financial Guru") },
+    { name: "Perfect Score", icon: "⭐", color: "#ffd93d", earned: badges.some(b => b.name === "Perfect Score") },
   ];
 
   const achievements = [
@@ -379,7 +385,7 @@ const ProfileScreen = () => {
                 </View>
 
                 <View style={styles.badgesContainer}>
-                  {badges.map((badge, index) => (
+                  {allBadges.map((badge, index) => (
                     <Animatable.View
                       key={index}
                       animation="zoomIn"
@@ -399,21 +405,14 @@ const ProfileScreen = () => {
                           },
                         ]}
                       >
-                        {typeof badge.icon === "string" ? (
-                          <Text
-                            style={[
-                              styles.badgeIconText,
-                              { opacity: badge.earned ? 1 : 0.3 },
-                            ]}
-                          >
-                            {badge.icon}
-                          </Text>
-                        ) : (
-                          <badge.icon
-                            size={24}
-                            color={badge.earned ? badge.color : "#999"}
-                          />
-                        )}
+                        <Text
+                          style={[
+                            styles.badgeIconText,
+                            { opacity: badge.earned ? 1 : 0.3 },
+                          ]}
+                        >
+                          {badge.icon}
+                        </Text>
                       </View>
                       <Text
                         style={[
@@ -537,6 +536,13 @@ const ProfileScreen = () => {
           </View>
         </ScrollView>
       </SafeAreaView>
+
+      {/* Badge Unlock Modal */}
+      <BadgeUnlockModal
+        visible={showBadgeModal}
+        badge={newBadge}
+        onClose={closeBadgeModal}
+      />
     </View>
   );
 };
