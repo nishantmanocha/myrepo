@@ -5,7 +5,7 @@ import SearchBox from "../../../components/SearchBox";
 import CyberCellList from "../../../components/CyberCellList";
 import GeolocationButton from "../../../components/GeolocationButton";
 import { calculateDistance } from "../../../utils/distance";
-import "react-native-reanimated";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import API from "../../../api/api"; // adjust the path if needed
 

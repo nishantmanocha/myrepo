@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { Easing } from "react-native-reanimated"; // if using Reanimated
+import { Easing } from "react-native";
 import { router } from "expo-router";
 
 const { width, height } = Dimensions.get("window");

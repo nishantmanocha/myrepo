@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
-  Vibration,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PSBColors } from '../utils/PSBColors';
@@ -41,9 +40,6 @@ const BadgeUnlockModal: React.FC<BadgeUnlockModalProps> = ({
 
   useEffect(() => {
     if (visible && badge) {
-      // Vibrate when badge is unlocked
-      Vibration.vibrate([0, 200, 100, 200]);
-      
       // Animate modal entrance
       Animated.sequence([
         Animated.spring(scaleAnim, {

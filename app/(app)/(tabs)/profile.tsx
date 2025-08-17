@@ -9,7 +9,6 @@ import {
   Image,
   Dimensions,
   Platform,
-  BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -37,12 +36,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { setUser } from "../../../redux/slices/profileSlices";
 import { router, useFocusEffect } from "expo-router";
 import * as Animatable from "react-native-animatable";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from "react-native-reanimated";
+import { Animated } from "react-native";
 import { PSBColors, PSBShadows, PSBSpacing } from "../../../utils/PSBColors";
 import Goals from "../../../components/Goals";
 import { useGoals } from "../../../contexts/GoalsContext";
@@ -71,18 +65,12 @@ const ProfileScreen = () => {
     updateDailyStreak,
   } = useGamification();
 
-  const progress = useSharedValue(0);
-  const headerScale = useSharedValue(1);
+  const progress = useRef(new Animated.Value(0)).current;
+  const headerScale = useRef(new Animated.Value(1)).current;
 
   useFocusEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        router.push("/(app)/(tabs)");
-        return true;
-      }
-    );
-    return () => backHandler.remove(); // Clean up the listener
+    // Handle back navigation using expo-router
+    // The tab navigation will handle back button automatically
   });
 
   useEffect(() => {
@@ -107,7 +95,11 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     setLoginState();
-    headerScale.value = withSpring(1, { damping: 15 });
+    Animated.spring(headerScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      damping: 15,
+    }).start();
     
     // Update daily streak when profile is opened
     if (user) {
@@ -128,21 +120,21 @@ const ProfileScreen = () => {
   const progressPercentage = progression?.progressToNextLevel || 0;
 
   useEffect(() => {
-    progress.value = withTiming(progressPercentage, { duration: 1200 });
+    Animated.timing(progress, {
+      toValue: progressPercentage,
+      duration: 1200,
+      useNativeDriver: false,
+    }).start();
   }, [progressPercentage]);
 
-  const animatedProgressStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progress.value}%`,
-      backgroundColor: PSBColors.primary.gold,
-    };
-  });
+  const animatedProgressStyle = {
+    width: `${progressPercentage}%`,
+    backgroundColor: PSBColors.primary.gold,
+  };
 
-  const animatedHeaderStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: headerScale.value }],
-    };
-  });
+  const animatedHeaderStyle = {
+    transform: [{ scale: headerScale }],
+  };
 
   // Get all available badges (you can fetch this from API)
   const allBadges = [

@@ -81,7 +81,7 @@ GET    /api/gamification/stats           - Get user's stats summary
 
 1. **Install Dependencies**
    ```bash
-   npm install react-native-animatable react-native-reanimated
+   npm install react-native-animatable
    ```
 
 2. **Copy Components**
